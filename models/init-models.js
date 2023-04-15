@@ -4,6 +4,7 @@ var _comments = require("./comments");
 var _places = require("./places");
 var _posts = require("./posts");
 var _rates = require("./rates");
+var _sequelizemeta = require("./sequelizemeta");
 var _services = require("./services");
 var _tour_arrival = require("./tour_arrival");
 var _tour_place = require("./tour_place");
@@ -20,6 +21,7 @@ function initModels(sequelize) {
   var places = _places(sequelize, DataTypes);
   var posts = _posts(sequelize, DataTypes);
   var rates = _rates(sequelize, DataTypes);
+  var sequelizemeta = _sequelizemeta(sequelize, DataTypes);
   var services = _services(sequelize, DataTypes);
   var tour_arrival = _tour_arrival(sequelize, DataTypes);
   var tour_place = _tour_place(sequelize, DataTypes);
@@ -69,6 +71,7 @@ function initModels(sequelize) {
     places,
     posts,
     rates,
+    sequelizemeta,
     services,
     tour_arrival,
     tour_place,
