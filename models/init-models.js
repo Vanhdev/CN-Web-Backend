@@ -32,38 +32,56 @@ function initModels(sequelize) {
   var user_favorite_tour = _user_favorite_tour(sequelize, DataTypes);
   var users = _users(sequelize, DataTypes);
 
-  tour_arrival.belongsTo(arrivals, { as: "arrival", foreignKey: "arrival_id"});
-  arrivals.hasMany(tour_arrival, { as: "tour_arrivals", foreignKey: "arrival_id"});
-  tour_place.belongsTo(places, { as: "place", foreignKey: "place_id"});
-  places.hasMany(tour_place, { as: "tour_places", foreignKey: "place_id"});
-  comments.belongsTo(posts, { as: "post", foreignKey: "post_id"});
-  posts.hasMany(comments, { as: "comments", foreignKey: "post_id"});
-  tour_service.belongsTo(services, { as: "service", foreignKey: "service_id"});
-  services.hasMany(tour_service, { as: "tour_services", foreignKey: "service_id"});
-  rates.belongsTo(tours, { as: "tour", foreignKey: "tour_id"});
-  tours.hasMany(rates, { as: "rates", foreignKey: "tour_id"});
-  tour_arrival.belongsTo(tours, { as: "tour", foreignKey: "tour_id"});
-  tours.hasMany(tour_arrival, { as: "tour_arrivals", foreignKey: "tour_id"});
-  tour_place.belongsTo(tours, { as: "tour", foreignKey: "tour_id"});
-  tours.hasMany(tour_place, { as: "tour_places", foreignKey: "tour_id"});
-  tour_service.belongsTo(tours, { as: "tour", foreignKey: "tour_id"});
-  tours.hasMany(tour_service, { as: "tour_services", foreignKey: "tour_id"});
-  user_bookinng_tour.belongsTo(tours, { as: "tour", foreignKey: "tour_id"});
-  tours.hasMany(user_bookinng_tour, { as: "user_bookinng_tours", foreignKey: "tour_id"});
-  user_favorite_tour.belongsTo(tours, { as: "tour", foreignKey: "tour_id"});
-  tours.hasMany(user_favorite_tour, { as: "user_favorite_tours", foreignKey: "tour_id"});
-  tours.belongsTo(types, { as: "type", foreignKey: "type_id"});
-  types.hasMany(tours, { as: "tours", foreignKey: "type_id"});
-  comments.belongsTo(users, { as: "user", foreignKey: "user_id"});
-  users.hasMany(comments, { as: "comments", foreignKey: "user_id"});
-  posts.belongsTo(users, { as: "user", foreignKey: "user_id"});
-  users.hasMany(posts, { as: "posts", foreignKey: "user_id"});
-  rates.belongsTo(users, { as: "user", foreignKey: "user_id"});
-  users.hasMany(rates, { as: "rates", foreignKey: "user_id"});
-  user_bookinng_tour.belongsTo(users, { as: "user", foreignKey: "user_id"});
-  users.hasMany(user_bookinng_tour, { as: "user_bookinng_tours", foreignKey: "user_id"});
-  user_favorite_tour.belongsTo(users, { as: "user", foreignKey: "user_id"});
-  users.hasMany(user_favorite_tour, { as: "user_favorite_tours", foreignKey: "user_id"});
+  tour_arrival.belongsTo(arrivals, { as: "arrival", foreignKey: "arrival_id" });
+  arrivals.hasMany(tour_arrival, {
+    as: "tour_arrivals",
+    foreignKey: "arrival_id",
+  });
+  tour_place.belongsTo(places, { as: "place", foreignKey: "place_id" });
+  places.hasMany(tour_place, { as: "tour_places", foreignKey: "place_id" });
+  comments.belongsTo(posts, { as: "post", foreignKey: "post_id" });
+  posts.hasMany(comments, { as: "comments", foreignKey: "post_id" });
+  tour_service.belongsTo(services, { as: "service", foreignKey: "service_id" });
+  services.hasMany(tour_service, {
+    as: "tour_services",
+    foreignKey: "service_id",
+  });
+  rates.belongsTo(tours, { as: "tour", foreignKey: "tour_id" });
+  tours.hasMany(rates, { as: "rates", foreignKey: "tour_id" });
+  tour_arrival.belongsTo(tours, { as: "tour", foreignKey: "tour_id" });
+  tours.hasMany(tour_arrival, { as: "tour_arrivals", foreignKey: "tour_id" });
+  tour_place.belongsTo(tours, { as: "tour", foreignKey: "tour_id" });
+  tours.hasMany(tour_place, { as: "tour_places", foreignKey: "tour_id" });
+  tour_service.belongsTo(tours, { as: "tour", foreignKey: "tour_id" });
+  tours.hasMany(tour_service, { as: "tour_services", foreignKey: "tour_id" });
+  user_bookinng_tour.belongsTo(tours, { as: "tour", foreignKey: "tour_id" });
+  tours.hasMany(user_bookinng_tour, {
+    as: "user_bookinng_tours",
+    foreignKey: "tour_id",
+  });
+  user_favorite_tour.belongsTo(tours, { as: "tour", foreignKey: "tour_id" });
+  tours.hasMany(user_favorite_tour, {
+    as: "user_favorite_tours",
+    foreignKey: "tour_id",
+  });
+  tours.belongsTo(types, { as: "type", foreignKey: "type_id" });
+  types.hasMany(tours, { as: "tours", foreignKey: "type_id" });
+  comments.belongsTo(users, { as: "user", foreignKey: "user_id" });
+  users.hasMany(comments, { as: "comments", foreignKey: "user_id" });
+  posts.belongsTo(users, { as: "user", foreignKey: "user_id" });
+  users.hasMany(posts, { as: "posts", foreignKey: "user_id" });
+  rates.belongsTo(users, { as: "user", foreignKey: "user_id" });
+  users.hasMany(rates, { as: "rates", foreignKey: "user_id" });
+  user_bookinng_tour.belongsTo(users, { as: "user", foreignKey: "user_id" });
+  users.hasMany(user_bookinng_tour, {
+    as: "user_bookinng_tours",
+    foreignKey: "user_id",
+  });
+  user_favorite_tour.belongsTo(users, { as: "user", foreignKey: "user_id" });
+  users.hasMany(user_favorite_tour, {
+    as: "user_favorite_tours",
+    foreignKey: "user_id",
+  });
 
   return {
     arrivals,
