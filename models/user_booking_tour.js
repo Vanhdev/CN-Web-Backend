@@ -1,6 +1,14 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('tour_service', {
+  return sequelize.define('user_booking_tour', {
+    user_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'users',
+        key: 'id'
+      }
+    },
     tour_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -9,31 +17,27 @@ module.exports = function(sequelize, DataTypes) {
         key: 'id'
       }
     },
-    service_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'services',
-        key: 'id'
-      }
+    booking_time: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'tour_service',
+    tableName: 'user_booking_tour',
     timestamps: false,
     indexes: [
+      {
+        name: "user_id",
+        using: "BTREE",
+        fields: [
+          { name: "user_id" },
+        ]
+      },
       {
         name: "tour_id",
         using: "BTREE",
         fields: [
           { name: "tour_id" },
-        ]
-      },
-      {
-        name: "service_id",
-        using: "BTREE",
-        fields: [
-          { name: "service_id" },
         ]
       },
     ]

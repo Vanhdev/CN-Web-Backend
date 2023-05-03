@@ -96,4 +96,103 @@ const getTypeTourById = (typeId) => {
   });
 };
 
-module.exports = { creatTypeTour, updateType, deleteType, getTypeTourById };
+const addServiceTour = (name, description) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const newService = await db.services.create({ name, description });
+      resolve({
+        message: "Create service successfully",
+        service: newService,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const getServiceAdmin = (serviceId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const service = await db.services.findOne({
+        where: { id: serviceId },
+      });
+
+      if (!service) {
+        resolve({
+          message: "Service not found",
+        });
+      }
+
+      resolve({
+        message: "OK",
+        service,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const deleteServiceAdmin = (serviceId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const service = await db.services.findOne({
+        where: { id: serviceId },
+        raw: false,
+      });
+
+      if (service) {
+        await service.destroy();
+        resolve({
+          message: "Delete service successfully",
+        });
+      } else {
+        resolve({
+          message: "Service not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const editServiceAdmin = (serviceId, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const service = await db.services.findOne({
+        where: { id: serviceId },
+        raw: false,
+      });
+
+      if (service) {
+        service.name = data.name ? data.name : service.name;
+        service.description = data.description
+          ? data.description
+          : service.description;
+        await service.save();
+        resolve({
+          message: "Update successfully",
+          service,
+        });
+      } else {
+        resolve({
+          message: "Service not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+module.exports = {
+  creatTypeTour,
+  updateType,
+  deleteType,
+  getTypeTourById,
+  addServiceTour,
+  getServiceAdmin,
+  deleteServiceAdmin,
+  editServiceAdmin,
+};
