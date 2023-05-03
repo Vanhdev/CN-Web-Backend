@@ -72,16 +72,16 @@ const handleLogin = (email, password) => {
 const createNewUser = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      if (data.email === null || data.email === "") {
-        resolve("Missing required email");
+      if (data.email == null || data.email == "") {
+        return resolve("Missing required email");
       }
 
-      if (data.name === null || data.name === "") {
-        resolve("Missing required name");
+      if (data.name == null || data.name == "") {
+        return resolve("Missing required name");
       }
 
-      if (data.password === null || data.password === "") {
-        resolve("Missing required password");
+      if (data.password == null || data.password == "") {
+        return resolve("Missing required password");
       }
 
       let check = await checkEmail(data.email);

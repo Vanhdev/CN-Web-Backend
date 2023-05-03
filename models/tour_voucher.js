@@ -1,6 +1,14 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('tour_service', {
+  return sequelize.define('tour_voucher', {
+    voucher_id: {
+      type: DataTypes.INTEGER,
+      allowNull: true,
+      references: {
+        model: 'vouchers',
+        key: 'id'
+      }
+    },
     tour_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -8,18 +16,10 @@ module.exports = function(sequelize, DataTypes) {
         model: 'tours',
         key: 'id'
       }
-    },
-    service_id: {
-      type: DataTypes.INTEGER,
-      allowNull: true,
-      references: {
-        model: 'services',
-        key: 'id'
-      }
     }
   }, {
     sequelize,
-    tableName: 'tour_service',
+    tableName: 'tour_voucher',
     timestamps: false,
     indexes: [
       {
@@ -30,10 +30,10 @@ module.exports = function(sequelize, DataTypes) {
         ]
       },
       {
-        name: "service_id",
+        name: "voucher_id",
         using: "BTREE",
         fields: [
-          { name: "service_id" },
+          { name: "voucher_id" },
         ]
       },
     ]
