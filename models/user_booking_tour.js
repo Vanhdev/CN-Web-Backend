@@ -1,6 +1,6 @@
 const Sequelize = require('sequelize');
 module.exports = function(sequelize, DataTypes) {
-  return sequelize.define('user_bookinng_tour', {
+  return sequelize.define('user_booking_tour', {
     user_id: {
       type: DataTypes.INTEGER,
       allowNull: true,
@@ -16,10 +16,14 @@ module.exports = function(sequelize, DataTypes) {
         model: 'tours',
         key: 'id'
       }
+    },
+    booking_time: {
+      type: DataTypes.DATE,
+      allowNull: true
     }
   }, {
     sequelize,
-    tableName: 'user_bookinng_tour',
+    tableName: 'user_booking_tour',
     timestamps: false,
     indexes: [
       {
