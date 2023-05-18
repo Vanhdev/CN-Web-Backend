@@ -186,6 +186,94 @@ const editServiceAdmin = (serviceId, data) => {
   });
 };
 
+const addVoucerAdmin = (name, discount) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const newVoucher = await db.vouchers.create({ name, discount });
+      resolve({
+        message: "Create voucher successfully",
+        service: newVoucher,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const getVoucherAdmin = (voucherId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const voucher = await db.vouchers.findOne({
+        where: { id: voucherId },
+      });
+
+      if (!voucher) {
+        resolve({
+          message: "Voucher not found",
+        });
+      }
+
+      resolve({
+        message: "OK",
+        voucher,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const deleteVoucherAdmin = (voucherId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const voucher = await db.vouchers.findOne({
+        where: { id: voucherId },
+        raw: false,
+      });
+
+      if (voucher) {
+        await voucher.destroy();
+        resolve({
+          message: "Delete voucher successfully",
+        });
+      } else {
+        resolve({
+          message: "Voucher not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const editVoucherAdmin = (id, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const voucher = await db.vouchers.findOne({
+        where: { id: id },
+        raw: false,
+      });
+
+      if (voucher) {
+        voucher.name = data.name ? data.name : voucher.name;
+        voucher.discount = data.discount ? data.discount : voucher.discount;
+        await voucher.save();
+        resolve({
+          message: "Update successfully",
+          voucher,
+        });
+      } else {
+        resolve({
+          message: "Voucher not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   creatTypeTour,
   updateType,
@@ -195,4 +283,8 @@ module.exports = {
   getServiceAdmin,
   deleteServiceAdmin,
   editServiceAdmin,
+  addVoucerAdmin,
+  getVoucherAdmin,
+  deleteVoucherAdmin,
+  editVoucherAdmin,
 };
