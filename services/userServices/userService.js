@@ -54,4 +54,109 @@ const updateUserByEmail = (userUpdate) => {
   });
 };
 
-module.exports = { getUserById, updateUserByEmail };
+const handleCreatePost = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (data) {
+        const newPost = await db.posts.create({
+          title: data?.title,
+          content: data?.content,
+        });
+        resolve({
+          message: "Create post successfully",
+          newPost,
+        });
+      } else {
+        resolve({
+          message: "Missing required parameter",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleGetPost = (postId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const post = await db.posts.findOne({
+        where: { id: postId },
+      });
+
+      if (!post) {
+        resolve({
+          message: "Post not found",
+        });
+      }
+
+      resolve({
+        message: "OK",
+        post,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleUpdatePost = (postId, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const post = await db.posts.findOne({
+        where: { id: postId },
+        raw: false,
+      });
+
+      if (post) {
+        post.title = data.title ? data.title : post.title;
+        post.content = data.content ? data.content : post.content;
+
+        await post.save();
+        resolve({
+          message: "Update successfully",
+          post,
+        });
+      } else {
+        resolve({
+          message: "Post not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleDeletePost = (postId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const post = await db.posts.findOne({
+        where: { id: postId },
+        raw: false,
+      });
+
+      if (post) {
+        await post.destroy();
+        resolve({
+          message: "Delete post successfully",
+        });
+      } else {
+        resolve({
+          message: "Post not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+module.exports = {
+  getUserById,
+  updateUserByEmail,
+  handleCreatePost,
+  handleGetPost,
+  handleUpdatePost,
+  handleDeletePost,
+};

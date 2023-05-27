@@ -32,4 +32,55 @@ const updateUser = async (req, res) => {
   return res.status(200).json(result);
 };
 
-module.exports = { getUserInfo, updateUser };
+const createPost = async (req, res) => {
+  const { title, content } = req.body;
+  if (!title || !content)
+    return res.status(200).json({
+      message: "Missing reuired parameter",
+    });
+  const data = { title, content };
+  const result = await userService.handleCreatePost(data);
+  return res.status(200).json(result);
+};
+
+const getPost = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const result = await userService.handleGetPost(req.query.id);
+  return res.status(200).json(result);
+};
+
+const updatePost = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+  const data = req.body;
+  const result = await userService.handleUpdatePost(Number(req.query.id), data);
+
+  return res.status(200).json(result);
+};
+
+const deletePost = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+  const result = await userService.handleDeletePost(req.query.id);
+  return res.status(200).json(result);
+};
+
+module.exports = {
+  getUserInfo,
+  updateUser,
+  createPost,
+  getPost,
+  updatePost,
+  deletePost,
+};
