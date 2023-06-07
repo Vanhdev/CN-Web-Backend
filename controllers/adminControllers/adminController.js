@@ -81,6 +81,47 @@ const editService = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const addVoucher = async (req, res) => {
+  const { name, discount } = req.body;
+  if (!name || !discount)
+    return res.status(200).json("Missing required parameter");
+  const result = await adminService.addVoucerAdmin(name, discount);
+  return res.status(200).json(result);
+};
+
+const getVoucher = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+  const result = await adminService.getVoucherAdmin(req.query.id);
+  return res.status(200).json(result);
+};
+
+const deleteVoucher = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+  const result = await adminService.deleteVoucherAdmin(req.query.id);
+  return res.status(200).json(result);
+};
+
+const editVoucher = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+
+  const data = req.body;
+  const result = await adminService.editVoucherAdmin(req.query.id, data);
+
+  return res.status(200).json(result);
+};
+
 module.exports = {
   addTypeTour,
   updateType,
@@ -90,4 +131,8 @@ module.exports = {
   getService,
   deleteService,
   editService,
+  addVoucher,
+  getVoucher,
+  deleteVoucher,
+  editVoucher,
 };

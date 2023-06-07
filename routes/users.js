@@ -11,4 +11,9 @@ router.get("/", function (req, res, next) {
 router.get("/get-user", userController.getUserInfo);
 router.put("/update-user", userController.updateUser);
 
+router.post("/add-post", userController.createPost);
+router.get("/get-post", userController.getPost);
+router.put("/update-post", userController.updatePost);
+router.delete("/delete-post", userController.deletePost);
+
 module.exports = router;
