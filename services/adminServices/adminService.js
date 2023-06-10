@@ -192,7 +192,7 @@ const addVoucerAdmin = (name, discount) => {
       const newVoucher = await db.vouchers.create({ name, discount });
       resolve({
         message: "Create voucher successfully",
-        service: newVoucher,
+        voucher: newVoucher,
       });
     } catch (error) {
       reject(error);
@@ -274,6 +274,117 @@ const editVoucherAdmin = (id, data) => {
   });
 };
 
+const handleAddTour = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const newTour = await db.tours.create({
+        type_id: data.type_id,
+        name: data.name,
+        overview: data.overview,
+        highlight: data.highlight,
+        start_date: data.start_date,
+        duration: data.duration,
+        slots: data.slots,
+        price: data.price,
+        status: data.status,
+        booking_deadline: data.booking_deadline,
+      });
+      resolve({
+        message: "Create tour successfully",
+        tour: newTour,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleGetTour = (tourId) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const tour = await db.tours.findOne({
+        where: { id: tourId },
+      });
+
+      if (!tour) {
+        resolve({
+          message: "Tour not found",
+        });
+      }
+
+      resolve({
+        message: "OK",
+        tour,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleEditTour = (idTour, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const tour = await db.tours.findOne({
+        where: { id: idTour },
+        raw: false,
+      });
+
+      if (tour) {
+        (tour.type_id = data.type_id ? data.type_id : tour.type_id),
+          (tour.name = data.name ? data.name : tour.name),
+          (tour.overview = data.overview ? data.overview : tour.overview),
+          (tour.highlight = data.highlight ? data.highlight : tour.highlight),
+          (tour.start_date = data.start_date
+            ? data.start_date
+            : tour.start_date),
+          (tour.duration = data.duration ? data.duration : tour.duration),
+          (tour.slots = data.slots ? data.slots : tour.slots),
+          (tour.price = data.price ? data.price : tour.price),
+          (tour.status = data.status ? data.status : tour.status),
+          (tour.booking_deadline = data.booking_deadline
+            ? data.booking_deadline
+            : tour.booking_deadline),
+          await tour.save();
+        resolve({
+          message: "Update successfully",
+          tour,
+        });
+      } else {
+        resolve({
+          message: "Tour not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleDeleteTour = (idTour) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const tour = await db.tours.findOne({
+        where: { id: idTour },
+        raw: false,
+      });
+
+      if (tour) {
+        await tour.destroy();
+        resolve({
+          message: "Delete tour successfully",
+        });
+      } else {
+        resolve({
+          message: "Tour not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   creatTypeTour,
   updateType,
@@ -287,4 +398,8 @@ module.exports = {
   getVoucherAdmin,
   deleteVoucherAdmin,
   editVoucherAdmin,
+  handleAddTour,
+  handleGetTour,
+  handleEditTour,
+  handleDeleteTour,
 };
