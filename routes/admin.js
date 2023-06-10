@@ -20,4 +20,10 @@ router.get("/get-voucher", adminController.getVoucher);
 router.delete("/delete-voucher", adminController.deleteVoucher);
 router.put("/edit-voucher", adminController.editVoucher);
 
+// tour
+router.post("/add-tour", adminController.addTour);
+router.get("/get-tour", adminController.getTour);
+router.put("/edit-tour", adminController.editTour);
+router.delete("/delete-tour", adminController.deleteTour);
+
 module.exports = router;

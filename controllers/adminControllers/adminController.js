@@ -122,6 +122,79 @@ const editVoucher = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const addTour = async (req, res) => {
+  const {
+    type_id,
+    name,
+    overview,
+    highlight,
+    start_date,
+    duration,
+    slots,
+    price,
+    status,
+    booking_deadline,
+  } = req.body;
+  if (
+    !type_id ||
+    !name ||
+    !overview ||
+    !highlight ||
+    !start_date ||
+    !duration ||
+    !slots ||
+    !price ||
+    !status ||
+    !booking_deadline
+  ) {
+    return res.status(200).json("Missing required parameter");
+  }
+  const result = await adminService.handleAddTour({
+    type_id,
+    name,
+    overview,
+    highlight,
+    start_date,
+    duration,
+    slots,
+    price,
+    status,
+    booking_deadline,
+  });
+  return res.status(200).json(result);
+};
+
+const getTour = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+  const result = await adminService.handleGetTour(req.query.id);
+  return res.status(200).json(result);
+};
+
+const editTour = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+  const data = req.body;
+  const result = await adminService.handleEditTour(req.query.id, data);
+  return res.status(200).json(result);
+};
+
+const deleteTour = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+  const result = await adminService.handleDeleteTour(req.query.id);
+  return res.status(200).json(result);
+};
+
 module.exports = {
   addTypeTour,
   updateType,
@@ -135,4 +208,8 @@ module.exports = {
   getVoucher,
   deleteVoucher,
   editVoucher,
+  addTour,
+  getTour,
+  editTour,
+  deleteTour,
 };
