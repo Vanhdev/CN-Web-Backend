@@ -21,4 +21,10 @@ router.delete("/delete-post", userController.deletePost);
 router.post("/add-qas", userController.createQAS);
 router.get("/get-question", userController.getQuestion);
 
+// comment
+router.post("/add-comment", userController.addComment);
+router.get("/get-comment", userController.getCommentOfPost);
+router.delete("/delete-comment", userController.deleteComment);
+router.put("/edit-comment", userController.updateComment);
+
 module.exports = router;
