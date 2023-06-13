@@ -216,6 +216,17 @@ const deleteQAS = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const handleRequestPost = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+  const data = req.body;
+  const result = await adminService.adminHandleReqPost(req.query.id, data);
+  return res.status(200).json(result);
+};
+
 module.exports = {
   addTypeTour,
   updateType,
@@ -235,4 +246,5 @@ module.exports = {
   deleteTour,
   answerQuestion,
   deleteQAS,
+  handleRequestPost,
 };

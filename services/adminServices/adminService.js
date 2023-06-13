@@ -435,6 +435,32 @@ const handleDeleteQAS = (id) => {
   });
 };
 
+const adminHandleReqPost = (id, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const post = await db.posts.findOne({
+        where: { id: id },
+        raw: false,
+      });
+
+      if (post) {
+        post.status = data.status ? data.status : post.status;
+        await post.save();
+        resolve({
+          message: "Handle request successfully",
+          post,
+        });
+      } else {
+        resolve({
+          message: "Post not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   creatTypeTour,
   updateType,
@@ -454,4 +480,5 @@ module.exports = {
   handleDeleteTour,
   handleAnswerQAS,
   handleDeleteQAS,
+  adminHandleReqPost,
 };
