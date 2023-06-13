@@ -30,4 +30,7 @@ router.delete("/delete-tour", adminController.deleteTour);
 router.put("/ans-qas", adminController.answerQuestion);
 router.delete("/delete-qas", adminController.deleteQAS);
 
+// post
+router.put("/handle-post", adminController.handleRequestPost);
+
 module.exports = router;

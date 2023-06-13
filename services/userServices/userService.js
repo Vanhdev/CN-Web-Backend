@@ -61,6 +61,7 @@ const handleCreatePost = (data) => {
         const newPost = await db.posts.create({
           title: data?.title,
           content: data?.content,
+          status: "false",
         });
         resolve({
           message: "Create post successfully",
@@ -137,10 +138,24 @@ const handleDeletePost = (postId) => {
       });
 
       if (post) {
-        await post.destroy();
-        resolve({
-          message: "Delete post successfully",
+        const comments = await db.comments.findAll({
+          where: { post_id: Number(postId) },
         });
+        if (!comments || comments.length === 0) {
+          await post.destroy();
+          resolve({
+            message: "Delete post successfully",
+          });
+        } else {
+          await db.comments.destroy({
+            where: { post_id: Number(postId) },
+          });
+
+          await post.destroy();
+          resolve({
+            message: "Delete post successfully",
+          });
+        }
       } else {
         resolve({
           message: "Post not found",
@@ -242,9 +257,7 @@ const handleGetCommentOfPost = (idPost) => {
       if (post) {
         const comments = await db.comments.findAll({
           where: { post_id: Number(idPost) },
-          // attributes: { exclude: ["id"] },
         });
-        console.log(comments);
 
         if (!comments || comments.length === 0) {
           resolve({
