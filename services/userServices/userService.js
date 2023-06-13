@@ -203,6 +203,120 @@ const handleGetQuestion = (idQAS) => {
   });
 };
 
+const handleAddComment = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (data) {
+        const newCmt = await db.comments.create(
+          {
+            post_id: data?.post_id,
+            user_id: data?.user_id,
+            content: data?.content,
+          }
+          // {
+          //   fields: ["post_id", "user_id", "content"], // Exclude the 'id' field
+          // }
+        );
+        resolve({
+          message: "Create comment successfully",
+          newCmt,
+        });
+      } else {
+        resolve({
+          message: "Missing required parameter",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleGetCommentOfPost = (idPost) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const post = await db.posts.findOne({
+        where: { id: Number(idPost) },
+      });
+
+      if (post) {
+        const comments = await db.comments.findAll({
+          where: { post_id: Number(idPost) },
+          // attributes: { exclude: ["id"] },
+        });
+        console.log(comments);
+
+        if (!comments || comments.length === 0) {
+          resolve({
+            message: "Post doesn't have any comment",
+          });
+        }
+
+        resolve({
+          message: "OK",
+          comments,
+        });
+      } else {
+        resolve({
+          message: "Post not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleDeleteComment = (idCmt) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const comment = await db.comments.findOne({
+        where: { id: idCmt },
+        raw: false,
+      });
+
+      if (comment) {
+        await comment.destroy();
+        resolve({
+          message: "Delete comment successfully",
+        });
+      } else {
+        resolve({
+          message: "Comment not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleUpdateComment = (id, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const comment = await db.comments.findOne({
+        where: { id: id },
+        raw: false,
+      });
+
+      if (comment) {
+        comment.content = data.content ? data.content : comment.content;
+        await comment.save();
+        resolve({
+          message: "Update successfully",
+          comment,
+        });
+      } else {
+        resolve({
+          message: "Comment not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   getUserById,
   updateUserByEmail,
@@ -212,4 +326,8 @@ module.exports = {
   handleDeletePost,
   handleAddQAS,
   handleGetQuestion,
+  handleAddComment,
+  handleGetCommentOfPost,
+  handleDeleteComment,
+  handleUpdateComment,
 };
