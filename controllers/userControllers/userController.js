@@ -76,6 +76,28 @@ const deletePost = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const createQAS = async (req, res) => {
+  const { question, user_id } = req.body;
+  if (!question || !user_id)
+    return res.status(200).json({
+      message: "Missing reuired parameter",
+    });
+  const data = { question, user_id };
+  const result = await userService.handleAddQAS(data);
+  return res.status(200).json(result);
+};
+
+const getQuestion = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const result = await userService.handleGetQuestion(req.query.id);
+  return res.status(200).json(result);
+};
+
 module.exports = {
   getUserInfo,
   updateUser,
@@ -83,4 +105,6 @@ module.exports = {
   getPost,
   updatePost,
   deletePost,
+  createQAS,
+  getQuestion,
 };
