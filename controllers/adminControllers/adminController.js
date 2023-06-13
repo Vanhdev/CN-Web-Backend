@@ -195,6 +195,27 @@ const deleteTour = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const answerQuestion = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+  const data = req.body;
+  const result = await adminService.handleAnswerQAS(req.query.id, data);
+  return res.status(200).json(result);
+};
+
+const deleteQAS = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+  const result = await adminService.handleDeleteQAS(req.query.id);
+  return res.status(200).json(result);
+};
+
 module.exports = {
   addTypeTour,
   updateType,
@@ -212,4 +233,6 @@ module.exports = {
   getTour,
   editTour,
   deleteTour,
+  answerQuestion,
+  deleteQAS,
 };

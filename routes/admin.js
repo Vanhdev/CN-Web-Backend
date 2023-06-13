@@ -26,4 +26,8 @@ router.get("/get-tour", adminController.getTour);
 router.put("/edit-tour", adminController.editTour);
 router.delete("/delete-tour", adminController.deleteTour);
 
+// qas
+router.put("/ans-qas", adminController.answerQuestion);
+router.delete("/delete-qas", adminController.deleteQAS);
+
 module.exports = router;

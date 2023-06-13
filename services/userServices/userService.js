@@ -152,6 +152,57 @@ const handleDeletePost = (postId) => {
   });
 };
 
+const handleAddQAS = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (data) {
+        const newQuestion = await db.qas.create({
+          question: data?.question,
+          user_id: data?.user_id,
+        });
+        resolve({
+          message: "Create question successfully",
+          newQuestion,
+        });
+      } else {
+        resolve({
+          message: "Missing required parameter",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleGetQuestion = (idQAS) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (idQAS.toLowerCase() === "all") {
+        const allQAS = await db.qas.findAll();
+        resolve(allQAS);
+      } else {
+        const question = await db.qas.findOne({
+          where: { id: idQAS },
+        });
+
+        if (!question) {
+          resolve({
+            message: "Question not found",
+          });
+        }
+
+        resolve({
+          message: "OK",
+          question,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   getUserById,
   updateUserByEmail,
@@ -159,4 +210,6 @@ module.exports = {
   handleGetPost,
   handleUpdatePost,
   handleDeletePost,
+  handleAddQAS,
+  handleGetQuestion,
 };

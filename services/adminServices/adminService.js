@@ -385,6 +385,56 @@ const handleDeleteTour = (idTour) => {
   });
 };
 
+const handleAnswerQAS = (idQAS, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const question = await db.qas.findOne({
+        where: { id: idQAS },
+        raw: false,
+      });
+
+      if (question) {
+        question.answer = data.answer ? data.answer : question.answer;
+        await question.save();
+        resolve({
+          message: "Answer successfully",
+          question,
+        });
+      } else {
+        resolve({
+          message: "Question not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleDeleteQAS = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const qas = await db.qas.findOne({
+        where: { id: id },
+        raw: false,
+      });
+
+      if (qas) {
+        await qas.destroy();
+        resolve({
+          message: "Delete qas successfully",
+        });
+      } else {
+        resolve({
+          message: "Qas not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   creatTypeTour,
   updateType,
@@ -402,4 +452,6 @@ module.exports = {
   handleGetTour,
   handleEditTour,
   handleDeleteTour,
+  handleAnswerQAS,
+  handleDeleteQAS,
 };
