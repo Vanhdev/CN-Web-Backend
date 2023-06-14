@@ -81,20 +81,25 @@ const handleCreatePost = (data) => {
 const handleGetPost = (postId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const post = await db.posts.findOne({
-        where: { id: postId },
-      });
+      if (postId.toLowerCase() === "all") {
+        const allPosts = await db.posts.findAll();
+        resolve(allPosts);
+      } else {
+        const post = await db.posts.findOne({
+          where: { id: postId },
+        });
 
-      if (!post) {
+        if (!post) {
+          resolve({
+            message: "Post not found",
+          });
+        }
+
         resolve({
-          message: "Post not found",
+          message: "OK",
+          post,
         });
       }
-
-      resolve({
-        message: "OK",
-        post,
-      });
     } catch (error) {
       reject(error);
     }

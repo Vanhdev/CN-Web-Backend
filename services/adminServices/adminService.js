@@ -76,20 +76,31 @@ const deleteType = (typeId) => {
 const getTypeTourById = (typeId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const type = await db.types.findOne({
-        where: { id: typeId },
-      });
+      if (typeId.toLowerCase() === "all") {
+        const allTypes = await db.types.findAll();
+        if (!allTypes) {
+          resolve({
+            message: "Not have any type",
+          });
+        } else {
+          resolve(allTypes);
+        }
+      } else {
+        const type = await db.types.findOne({
+          where: { id: typeId },
+        });
 
-      if (!type) {
+        if (!type) {
+          resolve({
+            message: "Type not found",
+          });
+        }
+
         resolve({
-          message: "Type not found",
+          message: "OK",
+          type,
         });
       }
-
-      resolve({
-        message: "OK",
-        type,
-      });
     } catch (error) {
       reject(error);
     }
@@ -113,20 +124,31 @@ const addServiceTour = (name, description) => {
 const getServiceAdmin = (serviceId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const service = await db.services.findOne({
-        where: { id: serviceId },
-      });
+      if (serviceId.toLowerCase() === "all") {
+        const allServices = await db.services.findAll();
+        if (!allServices) {
+          resolve({
+            message: "Not have any services",
+          });
+        } else {
+          resolve(allServices);
+        }
+      } else {
+        const service = await db.services.findOne({
+          where: { id: serviceId },
+        });
 
-      if (!service) {
+        if (!service) {
+          resolve({
+            message: "Service not found",
+          });
+        }
+
         resolve({
-          message: "Service not found",
+          message: "OK",
+          service,
         });
       }
-
-      resolve({
-        message: "OK",
-        service,
-      });
     } catch (error) {
       reject(error);
     }
@@ -203,20 +225,25 @@ const addVoucerAdmin = (name, discount) => {
 const getVoucherAdmin = (voucherId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const voucher = await db.vouchers.findOne({
-        where: { id: voucherId },
-      });
+      if (voucherId.toLowerCase() === "all") {
+        const allVoucher = await db.vouchers.findAll();
+        resolve(allVoucher);
+      } else {
+        const voucher = await db.vouchers.findOne({
+          where: { id: voucherId },
+        });
 
-      if (!voucher) {
+        if (!voucher) {
+          resolve({
+            message: "Voucher not found",
+          });
+        }
+
         resolve({
-          message: "Voucher not found",
+          message: "OK",
+          voucher,
         });
       }
-
-      resolve({
-        message: "OK",
-        voucher,
-      });
     } catch (error) {
       reject(error);
     }
@@ -302,20 +329,25 @@ const handleAddTour = (data) => {
 const handleGetTour = (tourId) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const tour = await db.tours.findOne({
-        where: { id: tourId },
-      });
+      if (tourId.toLowerCase() === "all") {
+        const allTours = await db.tours.findAll();
+        resolve(allTours);
+      } else {
+        const tour = await db.tours.findOne({
+          where: { id: tourId },
+        });
 
-      if (!tour) {
+        if (!tour) {
+          resolve({
+            message: "Tour not found",
+          });
+        }
+
         resolve({
-          message: "Tour not found",
+          message: "OK",
+          tour,
         });
       }
-
-      resolve({
-        message: "OK",
-        tour,
-      });
     } catch (error) {
       reject(error);
     }
