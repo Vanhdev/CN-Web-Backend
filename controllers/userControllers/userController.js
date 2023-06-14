@@ -76,6 +76,75 @@ const deletePost = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const createQAS = async (req, res) => {
+  const { question, user_id } = req.body;
+  if (!question || !user_id)
+    return res.status(200).json({
+      message: "Missing reuired parameter",
+    });
+  const data = { question, user_id };
+  const result = await userService.handleAddQAS(data);
+  return res.status(200).json(result);
+};
+
+const getQuestion = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const result = await userService.handleGetQuestion(req.query.id);
+  return res.status(200).json(result);
+};
+
+const addComment = async (req, res) => {
+  const { post_id, user_id, content } = req.body;
+  if (!post_id || !user_id || !content)
+    return res.status(200).json({
+      message: "Missing reuired parameter",
+    });
+  const data = { content, user_id, post_id };
+  const result = await userService.handleAddComment(data);
+  return res.status(200).json(result);
+};
+
+const getCommentOfPost = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const result = await userService.handleGetCommentOfPost(req.query.id);
+  return res.status(200).json(result);
+};
+
+const deleteComment = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+  const result = await userService.handleDeleteComment(req.query.id);
+  return res.status(200).json(result);
+};
+
+const updateComment = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+  const data = req.body;
+  const result = await userService.handleUpdateComment(
+    Number(req.query.id),
+    data
+  );
+
+  return res.status(200).json(result);
+};
+
 module.exports = {
   getUserInfo,
   updateUser,
@@ -83,4 +152,10 @@ module.exports = {
   getPost,
   updatePost,
   deletePost,
+  createQAS,
+  getQuestion,
+  addComment,
+  getCommentOfPost,
+  deleteComment,
+  updateComment,
 };
