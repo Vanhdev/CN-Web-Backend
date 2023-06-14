@@ -32,6 +32,16 @@
 
 ###### /users/edit-comment?id= : chỉnh sửa comment
 
+##### rate
+
+###### /users/add-rate: đánh giá tour
+
+###### /users/get-rate?idTour= : lấy danh sách đánh giá của 1 tour và hiển thị điểm của tour
+
+###### /users/delete-rate?idTour=?idUser= : xóa rate
+
+###### /users/edit-rate?idTour=?idUser= : chỉnh sửa rate
+
 ##### user
 
 ###### /users/get-user?id= : lấy thông tin người dùng
