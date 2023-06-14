@@ -7,17 +7,21 @@ const checkToken = (req, res, next) => {
     const accessToken = token.split(" ")[1];
     jwt.verify(accessToken, process.env.JWT_ACCESS_KEY, (err, user) => {
       if (err) {
-        return res.status(403).json("Token is invalid");
+        return res.status(403).json({
+          message: "Token is invalid",
+        });
       }
       req.user = user;
       next();
     });
   } else {
-    return res.status(401).json("Not authenticated");
+    return res.status(401).json({
+      message: "Not authenticated",
+    });
   }
 };
 
-const checkAdmin = (req, res) => {
+const checkAdmin = (req, res, next) => {
   checkToken(req, res, () => {
     if (req.user.data.email === "admin@gmail.com") {
       next();

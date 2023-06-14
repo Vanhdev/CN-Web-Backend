@@ -40,4 +40,10 @@ router.get("/get-comment", userController.getCommentOfPost);
 router.delete("/delete-comment", userController.deleteComment);
 router.put("/edit-comment", userController.updateComment);
 
+// rate
+router.post("/add-rate", userController.addRateTOur);
+router.get("/get-rate", userController.getRateByTour);
+router.delete("/delete-rate", userController.deleteRate);
+router.put("/edit-rate", userController.editRate);
+
 module.exports = router;
