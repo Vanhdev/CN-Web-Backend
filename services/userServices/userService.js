@@ -481,6 +481,103 @@ const handleUpdateRate = (idUser, idTour, data) => {
   });
 };
 
+const handleAddFavTour = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const favTour = await db.user_favorite_tour.create(
+        {
+          user_id: data?.user_id,
+          tour_id: data?.tour_id,
+        },
+        {
+          fields: ["user_id", "tour_id"],
+        }
+      );
+      resolve({
+        message: "Add favorite tour successfully",
+        favTour,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleGetFavTourOfUser = (idUser) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.users.findOne({
+        where: { id: Number(idUser) },
+      });
+
+      if (user) {
+        const favTour = await db.user_favorite_tour.findAll({
+          where: { user_id: Number(idUser) },
+          attributes: { exclude: ["id"] },
+        });
+
+        if (!favTour || favTour.length === 0) {
+          resolve({
+            message: "User doesn't have any favorite tour",
+          });
+        } else {
+          resolve({
+            message: "OK",
+            favTour,
+          });
+        }
+      } else {
+        resolve({
+          message: "User not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleDeleteFavTour = (idTour, idUser) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.users.findOne({
+        where: { id: idUser },
+      });
+
+      const tour = await db.tours.findOne({
+        where: { id: idTour },
+      });
+
+      if (!user || user.length === 0 || !tour || tour.length === 0) {
+        resolve({
+          message: "User or tour not found",
+        });
+      } else {
+        const favTour = await db.user_favorite_tour.findOne({
+          where: { user_id: idUser, tour_id: idTour },
+          attributes: { exclude: ["id"] },
+        });
+
+        if (!favTour || favTour.length === 0) {
+          resolve({
+            message: "Favorite tour not found",
+          });
+        } else {
+          await db.user_favorite_tour.destroy({
+            where: { user_id: idUser, tour_id: idTour },
+            limit: 1,
+          });
+          resolve({
+            message: "Delete favorite tour successfully",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   getUserById,
   updateUserByEmail,
@@ -498,4 +595,7 @@ module.exports = {
   handleGetRateByTour,
   handleDeleteRate,
   handleUpdateRate,
+  handleAddFavTour,
+  handleGetFavTourOfUser,
+  handleDeleteFavTour,
 };

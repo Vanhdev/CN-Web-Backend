@@ -46,4 +46,9 @@ router.get("/get-rate", userController.getRateByTour);
 router.delete("/delete-rate", userController.deleteRate);
 router.put("/edit-rate", userController.editRate);
 
+// favorite tour
+router.post("/add-fav-tour", userController.addFavTour);
+router.get("/get-fav-tour", userController.getFavTourOfUser);
+router.delete("/delete-fav-tour", userController.deleteFavTour);
+
 module.exports = router;

@@ -218,6 +218,44 @@ const editRate = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const addFavTour = async (req, res) => {
+  const { user_id, tour_id } = req.body;
+  if (!user_id || !tour_id) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const data = { user_id, tour_id };
+  const result = await userService.handleAddFavTour(data);
+  return res.status(200).json(result);
+};
+
+const getFavTourOfUser = async (req, res) => {
+  if (!req.query.idUser) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const result = await userService.handleGetFavTourOfUser(req.query.idUser);
+  return res.status(200).json(result);
+};
+
+const deleteFavTour = async (req, res) => {
+  if (!req.query.idTour || !req.query.idUser) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const result = await userService.handleDeleteFavTour(
+    req.query.idTour,
+    req.query.idUser
+  );
+  return res.status(200).json(result);
+};
+
 module.exports = {
   getUserInfo,
   updateUser,
@@ -235,4 +273,7 @@ module.exports = {
   getRateByTour,
   deleteRate,
   editRate,
+  addFavTour,
+  getFavTourOfUser,
+  deleteFavTour,
 };
