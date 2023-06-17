@@ -33,12 +33,12 @@ const updateUser = async (req, res) => {
 };
 
 const createPost = async (req, res) => {
-  const { title, content } = req.body;
-  if (!title || !content)
+  const { title, content, user_id } = req.body;
+  if (!title || !content || !user_id)
     return res.status(200).json({
-      message: "Missing reuired parameter",
+      message: "Missing required parameter",
     });
-  const data = { title, content };
+  const data = { title, content, user_id };
   const result = await userService.handleCreatePost(data);
   return res.status(200).json(result);
 };
@@ -80,7 +80,7 @@ const createQAS = async (req, res) => {
   const { question, user_id } = req.body;
   if (!question || !user_id)
     return res.status(200).json({
-      message: "Missing reuired parameter",
+      message: "Missing required parameter",
     });
   const data = { question, user_id };
   const result = await userService.handleAddQAS(data);
@@ -102,7 +102,7 @@ const addComment = async (req, res) => {
   const { post_id, user_id, content } = req.body;
   if (!post_id || !user_id || !content)
     return res.status(200).json({
-      message: "Missing reuired parameter",
+      message: "Missing required parameter",
     });
   const data = { content, user_id, post_id };
   const result = await userService.handleAddComment(data);
@@ -145,6 +145,117 @@ const updateComment = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const addRateTOur = async (req, res) => {
+  const {
+    user_id,
+    tour_id,
+    location_rate,
+    service_rate,
+    price_rate,
+    infrastructure_rate,
+  } = req.body;
+  if (
+    !tour_id ||
+    !user_id ||
+    !location_rate ||
+    !service_rate ||
+    !price_rate ||
+    !infrastructure_rate
+  )
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  const data = {
+    user_id,
+    tour_id,
+    location_rate,
+    service_rate,
+    price_rate,
+    infrastructure_rate,
+  };
+  const result = await userService.handleRateTour(data);
+  return res.status(200).json(result);
+};
+
+const getRateByTour = async (req, res) => {
+  if (!req.query.idTour) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const result = await userService.handleGetRateByTour(req.query.idTour);
+  return res.status(200).json(result);
+};
+
+const deleteRate = async (req, res) => {
+  if (!req.query.idTour || !req.query.idUser) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const result = await userService.handleDeleteRate(
+    req.query.idTour,
+    req.query.idUser
+  );
+  return res.status(200).json(result);
+};
+
+const editRate = async (req, res) => {
+  if (!req.query.idUser || !req.query.idTour) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+  const data = req.body;
+  const result = await userService.handleUpdateRate(
+    Number(req.query.idUser),
+    Number(req.query.idTour),
+    data
+  );
+
+  return res.status(200).json(result);
+};
+
+const addFavTour = async (req, res) => {
+  const { user_id, tour_id } = req.body;
+  if (!user_id || !tour_id) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const data = { user_id, tour_id };
+  const result = await userService.handleAddFavTour(data);
+  return res.status(200).json(result);
+};
+
+const getFavTourOfUser = async (req, res) => {
+  if (!req.query.idUser) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const result = await userService.handleGetFavTourOfUser(req.query.idUser);
+  return res.status(200).json(result);
+};
+
+const deleteFavTour = async (req, res) => {
+  if (!req.query.idTour || !req.query.idUser) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const result = await userService.handleDeleteFavTour(
+    req.query.idTour,
+    req.query.idUser
+  );
+  return res.status(200).json(result);
+};
+
 module.exports = {
   getUserInfo,
   updateUser,
@@ -158,4 +269,11 @@ module.exports = {
   getCommentOfPost,
   deleteComment,
   updateComment,
+  addRateTOur,
+  getRateByTour,
+  deleteRate,
+  editRate,
+  addFavTour,
+  getFavTourOfUser,
+  deleteFavTour,
 };

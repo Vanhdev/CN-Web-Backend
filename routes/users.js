@@ -1,6 +1,9 @@
 var express = require("express");
 const userController = require("../controllers/userControllers/userController");
 const mockController = require("../controllers/mockDataController");
+const multer = require("multer");
+const { checkToken } = require("../middleware/middleware");
+const upload = multer({ dest: "uploads/" });
 
 var router = express.Router();
 
@@ -13,31 +16,42 @@ router.get("/", function (req, res, next) {
 router.post("/add-mul-user", mockController.bulkUser);
 
 router.get("/get-user", userController.getUserInfo);
-router.put("/update-user", userController.updateUser);
+router.put("/update-user", checkToken, userController.updateUser);
 
 // mock post
 router.post("/add-mul-post", mockController.bulkPost);
 
 // post
-router.post("/add-post", userController.createPost);
-router.get("/get-post", userController.getPost);
-router.put("/update-post", userController.updatePost);
-router.delete("/delete-post", userController.deletePost);
+router.post("/add-post", checkToken, userController.createPost);
+router.get("/get-post", checkToken, userController.getPost);
+router.put("/update-post", checkToken, userController.updatePost);
+router.delete("/delete-post", checkToken, userController.deletePost);
 
 // mock qas
 router.post("/add-mul-qas", mockController.bulkQAS);
 
 // qas
-router.post("/add-qas", userController.createQAS);
-router.get("/get-question", userController.getQuestion);
+router.post("/add-qas", checkToken, userController.createQAS);
+router.get("/get-question", checkToken, userController.getQuestion);
 
 // mock comment
 router.post("/add-mul-cmt", mockController.bulkComment);
 
 // comment
-router.post("/add-comment", userController.addComment);
-router.get("/get-comment", userController.getCommentOfPost);
-router.delete("/delete-comment", userController.deleteComment);
-router.put("/edit-comment", userController.updateComment);
+router.post("/add-comment", checkToken, userController.addComment);
+router.get("/get-comment", checkToken, userController.getCommentOfPost);
+router.delete("/delete-comment", checkToken, userController.deleteComment);
+router.put("/edit-comment", checkToken, userController.updateComment);
+
+// rate
+router.post("/add-rate", checkToken, userController.addRateTOur);
+router.get("/get-rate", checkToken, userController.getRateByTour);
+router.delete("/delete-rate", checkToken, userController.deleteRate);
+router.put("/edit-rate", checkToken, userController.editRate);
+
+// favorite tour
+router.post("/add-fav-tour", checkToken, userController.addFavTour);
+router.get("/get-fav-tour", checkToken, userController.getFavTourOfUser);
+router.delete("/delete-fav-tour", checkToken, userController.deleteFavTour);
 
 module.exports = router;

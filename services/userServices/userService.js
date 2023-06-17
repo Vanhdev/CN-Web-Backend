@@ -61,6 +61,7 @@ const handleCreatePost = (data) => {
         const newPost = await db.posts.create({
           title: data?.title,
           content: data?.content,
+          user_id: data?.user_id,
           status: "false",
         });
         resolve({
@@ -227,16 +228,11 @@ const handleAddComment = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
       if (data) {
-        const newCmt = await db.comments.create(
-          {
-            post_id: data?.post_id,
-            user_id: data?.user_id,
-            content: data?.content,
-          }
-          // {
-          //   fields: ["post_id", "user_id", "content"], // Exclude the 'id' field
-          // }
-        );
+        const newCmt = await db.comments.create({
+          post_id: data?.post_id,
+          user_id: data?.user_id,
+          content: data?.content,
+        });
         resolve({
           message: "Create comment successfully",
           newCmt,
@@ -335,6 +331,254 @@ const handleUpdateComment = (id, data) => {
   });
 };
 
+const handleRateTour = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const newRate = await db.rates.create(
+        {
+          user_id: data?.user_id,
+          tour_id: data?.tour_id,
+          location_rate: data?.location_rate,
+          price_rate: data?.price_rate,
+          service_rate: data?.service_rate,
+          infrastructure_rate: data?.infrastructure_rate,
+        },
+        {
+          fields: [
+            "user_id",
+            "tour_id",
+            "location_rate",
+            "price_rate",
+            "service_rate",
+            "infrastructure_rate",
+          ],
+        }
+      );
+      resolve({
+        message: "Rate tour successfully",
+        newRate,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleGetRateByTour = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const tour = await db.tours.findOne({
+        where: { id: Number(id) },
+      });
+
+      if (tour) {
+        const rates = await db.rates.findAll({
+          where: { tour_id: Number(id) },
+          attributes: { exclude: ["id"] },
+        });
+
+        if (!rates || rates.length === 0) {
+          resolve({
+            message: "Tour doesn't have any comment",
+          });
+        } else {
+          let allPoint = 0;
+          rates.forEach((rate) => {
+            allPoint +=
+              (rate.location_rate +
+                rate.service_rate +
+                rate.price_rate +
+                rate.infrastructure_rate) /
+              4;
+          });
+
+          let pointTour = allPoint / rates.length;
+          resolve({
+            message: "OK",
+            rates,
+            pointTour,
+          });
+        }
+      } else {
+        resolve({
+          message: "Tour not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleDeleteRate = (idTour, idUser) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const rate = await db.rates.findOne({
+        where: { user_id: idUser, tour_id: idTour },
+        attributes: { exclude: ["id"] },
+        raw: false,
+      });
+
+      if (rate) {
+        await db.rates.destroy({
+          where: { user_id: idUser, tour_id: idTour },
+          // limit: 1,
+        });
+
+        resolve({
+          message: "Delete rate successfully",
+        });
+      } else {
+        resolve({
+          message: "Rate not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleUpdateRate = (idUser, idTour, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const rate = await db.rates.findOne({
+        where: { user_id: idUser, tour_id: idTour },
+        attributes: { exclude: ["id"] },
+        raw: false,
+      });
+
+      if (rate) {
+        const [rowsAffected] = await db.rates.update(
+          {
+            location_rate: data.location_rate || db.rates.location_rate,
+            price_rate: data.price_rate || db.rates.price_rate,
+            service_rate: data.service_rate || db.rates.service_rate,
+            infrastructure_rate:
+              data.infrastructure_rate || db.rates.infrastructure_rate,
+          },
+          {
+            where: { user_id: idUser, tour_id: idTour },
+          }
+        );
+
+        if (rowsAffected > 0) {
+          resolve({
+            message: "Update successfully",
+          });
+        } else {
+          resolve({
+            message: "You have not changed anything",
+          });
+        }
+      } else {
+        resolve({
+          message: "Rate not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleAddFavTour = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const favTour = await db.user_favorite_tour.create(
+        {
+          user_id: data?.user_id,
+          tour_id: data?.tour_id,
+        },
+        {
+          fields: ["user_id", "tour_id"],
+        }
+      );
+      resolve({
+        message: "Add favorite tour successfully",
+        favTour,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleGetFavTourOfUser = (idUser) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.users.findOne({
+        where: { id: Number(idUser) },
+      });
+
+      if (user) {
+        const favTour = await db.user_favorite_tour.findAll({
+          where: { user_id: Number(idUser) },
+          attributes: { exclude: ["id"] },
+        });
+
+        if (!favTour || favTour.length === 0) {
+          resolve({
+            message: "User doesn't have any favorite tour",
+          });
+        } else {
+          resolve({
+            message: "OK",
+            favTour,
+          });
+        }
+      } else {
+        resolve({
+          message: "User not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleDeleteFavTour = (idTour, idUser) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.users.findOne({
+        where: { id: idUser },
+      });
+
+      const tour = await db.tours.findOne({
+        where: { id: idTour },
+      });
+
+      if (!user || user.length === 0 || !tour || tour.length === 0) {
+        resolve({
+          message: "User or tour not found",
+        });
+      } else {
+        const favTour = await db.user_favorite_tour.findOne({
+          where: { user_id: idUser, tour_id: idTour },
+          attributes: { exclude: ["id"] },
+        });
+
+        if (!favTour || favTour.length === 0) {
+          resolve({
+            message: "Favorite tour not found",
+          });
+        } else {
+          await db.user_favorite_tour.destroy({
+            where: { user_id: idUser, tour_id: idTour },
+            limit: 1,
+          });
+          resolve({
+            message: "Delete favorite tour successfully",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   getUserById,
   updateUserByEmail,
@@ -348,4 +592,11 @@ module.exports = {
   handleGetCommentOfPost,
   handleDeleteComment,
   handleUpdateComment,
+  handleRateTour,
+  handleGetRateByTour,
+  handleDeleteRate,
+  handleUpdateRate,
+  handleAddFavTour,
+  handleGetFavTourOfUser,
+  handleDeleteFavTour,
 };
