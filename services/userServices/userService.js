@@ -421,7 +421,7 @@ const handleDeleteRate = (idTour, idUser) => {
       if (rate) {
         await db.rates.destroy({
           where: { user_id: idUser, tour_id: idTour },
-          limit: 1,
+          // limit: 1,
         });
 
         resolve({

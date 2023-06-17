@@ -2,6 +2,12 @@ const express = require("express");
 const router = express.Router();
 const adminController = require("../controllers/adminControllers/adminController");
 
+// places
+router.post("/add-place", adminController.addPlace);
+router.get("/get-place", adminController.getPlace);
+router.delete("/delete-place", adminController.deletePlace);
+router.put("/edit-place", adminController.updatePlace);
+
 // type tour
 router.post("/add-type", adminController.addTypeTour);
 router.put("/edit-type", adminController.updateType);

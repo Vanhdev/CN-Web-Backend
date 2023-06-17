@@ -134,6 +134,9 @@ const addTour = async (req, res) => {
     price,
     status,
     booking_deadline,
+    placeId,
+    serviceId,
+    voucherId,
   } = req.body;
   if (
     !type_id ||
@@ -145,9 +148,14 @@ const addTour = async (req, res) => {
     !slots ||
     !price ||
     !status ||
-    !booking_deadline
+    !booking_deadline ||
+    !placeId ||
+    !serviceId ||
+    !voucherId
   ) {
-    return res.status(200).json("Missing required parameter");
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
   }
   const result = await adminService.handleAddTour({
     type_id,
@@ -160,6 +168,9 @@ const addTour = async (req, res) => {
     price,
     status,
     booking_deadline,
+    placeId,
+    serviceId,
+    voucherId,
   });
   return res.status(200).json(result);
 };
@@ -227,6 +238,50 @@ const handleRequestPost = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const addPlace = async (req, res) => {
+  const { name, description } = req.body;
+  if (!name || !description) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const data = { name, description };
+  const result = await adminService.handleAddPlace(data);
+  return res.status(200).json(result);
+};
+
+const getPlace = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+  const result = await adminService.handleGetPlace(req.query.id);
+  return res.status(200).json(result);
+};
+
+const deletePlace = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+  const result = await adminService.handleDeletePlace(req.query.id);
+  return res.status(200).json(result);
+};
+
+const updatePlace = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+  const data = req.body;
+  const result = await adminService.handleEditPlace(req.query.id, data);
+  return res.status(200).json(result);
+};
+
 module.exports = {
   addTypeTour,
   updateType,
@@ -247,4 +302,8 @@ module.exports = {
   answerQuestion,
   deleteQAS,
   handleRequestPost,
+  addPlace,
+  getPlace,
+  deletePlace,
+  updatePlace,
 };
