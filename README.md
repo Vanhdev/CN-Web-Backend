@@ -44,7 +44,13 @@
 
 ##### user
 
+###### /auth/register : đăng ký (body gồm name, email, password)
+
+###### /auth/login : đăng nhập (body gồm email, password)
+
 ###### /users/get-user?id= : lấy thông tin người dùng
+
+###### /users/update-user : cập nhật thông tin người dùng
 
 ##### type
 
