@@ -18,16 +18,6 @@ const updateType = async (req, res) => {
   return res.status(200).json(result);
 };
 
-const deleteType = async (req, res) => {
-  if (!req.query.id) {
-    return res.status(200).json({
-      message: "Missing required paramter",
-    });
-  }
-  const result = await adminService.deleteType(req.query.id);
-  return res.status(200).json(result);
-};
-
 const getTypeTour = async (req, res) => {
   if (!req.query.id) {
     return res.status(200).json({
@@ -137,7 +127,9 @@ const addTour = async (req, res) => {
     placeId,
     serviceId,
     voucherId,
+    arrivalId,
   } = req.body;
+  const image = req.file.path;
   if (
     !type_id ||
     !name ||
@@ -151,7 +143,9 @@ const addTour = async (req, res) => {
     !booking_deadline ||
     !placeId ||
     !serviceId ||
-    !voucherId
+    !voucherId ||
+    !arrivalId ||
+    !image
   ) {
     return res.status(200).json({
       message: "Missing required parameter",
@@ -171,6 +165,8 @@ const addTour = async (req, res) => {
     placeId,
     serviceId,
     voucherId,
+    arrivalId,
+    image,
   });
   return res.status(200).json(result);
 };
@@ -240,13 +236,14 @@ const handleRequestPost = async (req, res) => {
 
 const addPlace = async (req, res) => {
   const { name, description } = req.body;
+  const image = req.file.path;
   if (!name || !description) {
     return res.status(200).json({
       message: "Missing required parameter",
     });
   }
 
-  const data = { name, description };
+  const data = { name, description, image };
   const result = await adminService.handleAddPlace(data);
   return res.status(200).json(result);
 };
@@ -282,10 +279,31 @@ const updatePlace = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const addArrival = async (req, res) => {
+  const { arrival_at } = req.body;
+  if (!arrival_at) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const result = await adminService.handleAddArrival(arrival_at);
+  return res.status(200).json(result);
+};
+
+const getArrival = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+  const result = await adminService.handleGetArrival(req.query.id);
+  return res.status(200).json(result);
+};
+
 module.exports = {
   addTypeTour,
   updateType,
-  deleteType,
   getTypeTour,
   addService,
   getService,
@@ -306,4 +324,6 @@ module.exports = {
   getPlace,
   deletePlace,
   updatePlace,
+  addArrival,
+  getArrival,
 };
