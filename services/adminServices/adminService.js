@@ -78,13 +78,7 @@ const getTypeTourById = (typeId) => {
     try {
       if (typeId.toLowerCase() === "all") {
         const allTypes = await db.types.findAll();
-        if (!allTypes) {
-          resolve({
-            message: "Not have any type",
-          });
-        } else {
-          resolve(allTypes);
-        }
+        resolve(allTypes);
       } else {
         const type = await db.types.findOne({
           where: { id: typeId },
@@ -126,13 +120,7 @@ const getServiceAdmin = (serviceId) => {
     try {
       if (serviceId.toLowerCase() === "all") {
         const allServices = await db.services.findAll();
-        if (!allServices) {
-          resolve({
-            message: "Not have any services",
-          });
-        } else {
-          resolve(allServices);
-        }
+        resolve(allServices);
       } else {
         const service = await db.services.findOne({
           where: { id: serviceId },
@@ -316,6 +304,40 @@ const handleAddTour = (data) => {
         status: data.status,
         booking_deadline: data.booking_deadline,
       });
+
+      // add place for tour
+      await db.tour_place.create(
+        {
+          tour_id: newTour.id,
+          place_id: Number(data.placeId),
+        },
+        {
+          fields: ["tour_id", "place_id"],
+        }
+      );
+
+      // add service for tour
+      await db.tour_service.create(
+        {
+          tour_id: newTour.id,
+          service_id: Number(data.serviceId),
+        },
+        {
+          fields: ["tour_id", "service_id"],
+        }
+      );
+
+      // add voucher for tour
+      await db.tour_voucher.create(
+        {
+          voucher_id: Number(data.voucherId),
+          tour_id: newTour.id,
+        },
+        {
+          fields: ["voucher_id", "tour_id"],
+        }
+      );
+
       resolve({
         message: "Create tour successfully",
         tour: newTour,
@@ -402,6 +424,15 @@ const handleDeleteTour = (idTour) => {
       });
 
       if (tour) {
+        await db.tour_place.destroy({
+          where: { tour_id: idTour },
+        });
+        await db.tour_voucher.destroy({
+          where: { tour_id: idTour },
+        });
+        await db.tour_service.destroy({
+          where: { tour_id: idTour },
+        });
         await tour.destroy();
         resolve({
           message: "Delete tour successfully",
@@ -493,6 +524,107 @@ const adminHandleReqPost = (id, data) => {
   });
 };
 
+const handleAddPlace = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const newPlace = await db.places.create({
+        name: data.name,
+        description: data.description,
+      });
+      resolve({
+        message: "Create tour successfully",
+        place: newPlace,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleGetPlace = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if (id.toLowerCase() === "all") {
+        const allPlaces = await db.places.findAll();
+        resolve(allPlaces);
+      } else {
+        const place = await db.places.findOne({
+          where: { id: id },
+        });
+
+        if (!place) {
+          resolve({
+            message: "Place not found",
+          });
+        }
+
+        resolve({
+          message: "OK",
+          place,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleDeletePlace = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const place = await db.places.findOne({
+        where: { id: id },
+        raw: false,
+      });
+
+      if (place) {
+        await db.tour_place.destroy({
+          where: { place_id: id },
+        });
+        await place.destroy();
+        resolve({
+          message: "Delete place successfully",
+        });
+      } else {
+        resolve({
+          message: "Place not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleEditPlace = (id, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const place = await db.places.findOne({
+        where: { id: id },
+        raw: false,
+      });
+
+      if (place) {
+        place.name = data.name ? data.name : place.name;
+        place.description = data.description
+          ? data.description
+          : place.description;
+        await place.save();
+        resolve({
+          message: "Update successfully",
+          place,
+        });
+      } else {
+        resolve({
+          message: "Place not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   creatTypeTour,
   updateType,
@@ -513,4 +645,8 @@ module.exports = {
   handleAnswerQAS,
   handleDeleteQAS,
   adminHandleReqPost,
+  handleAddPlace,
+  handleGetPlace,
+  handleDeletePlace,
+  handleEditPlace,
 };
