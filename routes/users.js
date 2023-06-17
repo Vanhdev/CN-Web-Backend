@@ -1,6 +1,8 @@
 var express = require("express");
 const userController = require("../controllers/userControllers/userController");
 const mockController = require("../controllers/mockDataController");
+const multer = require("multer");
+const upload = multer({ dest: "uploads/" });
 
 var router = express.Router();
 

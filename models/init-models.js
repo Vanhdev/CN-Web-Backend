@@ -1,6 +1,9 @@
 var DataTypes = require("sequelize").DataTypes;
 var _arrivals = require("./arrivals");
 var _comments = require("./comments");
+var _image_place = require("./image_place");
+var _image_tour = require("./image_tour");
+var _images = require("./images");
 var _places = require("./places");
 var _posts = require("./posts");
 var _qas = require("./qas");
@@ -20,6 +23,9 @@ var _vouchers = require("./vouchers");
 function initModels(sequelize) {
   var arrivals = _arrivals(sequelize, DataTypes);
   var comments = _comments(sequelize, DataTypes);
+  var image_place = _image_place(sequelize, DataTypes);
+  var image_tour = _image_tour(sequelize, DataTypes);
+  var images = _images(sequelize, DataTypes);
   var places = _places(sequelize, DataTypes);
   var posts = _posts(sequelize, DataTypes);
   var qas = _qas(sequelize, DataTypes);
@@ -38,12 +44,20 @@ function initModels(sequelize) {
 
   tour_arrival.belongsTo(arrivals, { as: "arrival", foreignKey: "arrival_id"});
   arrivals.hasMany(tour_arrival, { as: "tour_arrivals", foreignKey: "arrival_id"});
+  image_place.belongsTo(images, { as: "image", foreignKey: "image_id"});
+  images.hasMany(image_place, { as: "image_places", foreignKey: "image_id"});
+  image_tour.belongsTo(images, { as: "image", foreignKey: "image_id"});
+  images.hasMany(image_tour, { as: "image_tours", foreignKey: "image_id"});
+  image_place.belongsTo(places, { as: "place", foreignKey: "place_id"});
+  places.hasMany(image_place, { as: "image_places", foreignKey: "place_id"});
   tour_place.belongsTo(places, { as: "place", foreignKey: "place_id"});
   places.hasMany(tour_place, { as: "tour_places", foreignKey: "place_id"});
   comments.belongsTo(posts, { as: "post", foreignKey: "post_id"});
   posts.hasMany(comments, { as: "comments", foreignKey: "post_id"});
   tour_service.belongsTo(services, { as: "service", foreignKey: "service_id"});
   services.hasMany(tour_service, { as: "tour_services", foreignKey: "service_id"});
+  image_tour.belongsTo(tours, { as: "tour", foreignKey: "tour_id"});
+  tours.hasMany(image_tour, { as: "image_tours", foreignKey: "tour_id"});
   rates.belongsTo(tours, { as: "tour", foreignKey: "tour_id"});
   tours.hasMany(rates, { as: "rates", foreignKey: "tour_id"});
   tour_arrival.belongsTo(tours, { as: "tour", foreignKey: "tour_id"});
@@ -78,6 +92,9 @@ function initModels(sequelize) {
   return {
     arrivals,
     comments,
+    image_place,
+    image_tour,
+    images,
     places,
     posts,
     qas,

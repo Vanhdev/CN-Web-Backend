@@ -61,6 +61,7 @@ const handleCreatePost = (data) => {
         const newPost = await db.posts.create({
           title: data?.title,
           content: data?.content,
+          user_id: data?.user_id,
           status: "false",
         });
         resolve({
