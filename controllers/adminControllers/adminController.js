@@ -186,8 +186,18 @@ const editTour = async (req, res) => {
     });
   }
   const data = req.body;
-  const result = await adminService.handleEditTour(req.query.id, data);
-  return res.status(200).json(result);
+
+  if (!req.file) {
+    const result = await adminService.handleEditTour(req.query.id, data);
+    return res.status(200).json(result);
+  } else {
+    const result = await adminService.handleEditTour(
+      req.query.id,
+      data,
+      req.file.path
+    );
+    return res.status(200).json(result);
+  }
 };
 
 const deleteTour = async (req, res) => {
@@ -263,8 +273,17 @@ const updatePlace = async (req, res) => {
     });
   }
   const data = req.body;
-  const result = await adminService.handleEditPlace(req.query.id, data);
-  return res.status(200).json(result);
+  if (!req.file) {
+    const result = await adminService.handleEditPlace(req.query.id, data);
+    return res.status(200).json(result);
+  } else {
+    const result = await adminService.handleEditPlace(
+      req.query.id,
+      data,
+      req.file.path
+    );
+    return res.status(200).json(result);
+  }
 };
 
 const addArrival = async (req, res) => {

@@ -136,7 +136,7 @@ const handleGetPost = (postId) => {
   });
 };
 
-const handleUpdatePost = (postId, data) => {
+const handleUpdatePost = (postId, data, img) => {
   return new Promise(async (resolve, reject) => {
     try {
       const post = await db.posts.findOne({
@@ -153,6 +153,26 @@ const handleUpdatePost = (postId, data) => {
         post.short_description = data.short_description
           ? data.short_description
           : post.short_description;
+
+        if (img) {
+          const newImgPost = await db.images.create({
+            image_url: img,
+          });
+
+          await db.image_post.destroy({
+            where: { post_id: post.id },
+          });
+
+          await db.image_post.create(
+            {
+              image_id: newImgPost.id,
+              post_id: post.id,
+            },
+            {
+              fields: ["image_id", "post_id"],
+            }
+          );
+        }
 
         await post.save();
         resolve({

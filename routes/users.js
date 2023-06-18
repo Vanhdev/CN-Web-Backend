@@ -29,7 +29,12 @@ router.post(
   userController.createPost
 );
 router.get("/get-post", checkToken, userController.getPost);
-router.put("/update-post", checkToken, userController.updatePost);
+router.put(
+  "/update-post",
+  checkToken,
+  upload.single("image"),
+  userController.updatePost
+);
 router.delete("/delete-post", checkToken, userController.deletePost);
 
 // mock qas

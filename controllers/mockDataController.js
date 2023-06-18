@@ -87,6 +87,40 @@ const bulkService = async (req, res) => {
   }
 };
 
+const bulkPlace = async (req, res) => {
+  try {
+    const data = req.body.map((place) => ({
+      name: place.name,
+      description: place.description,
+    }));
+    await db.places.bulkCreate(data);
+    return res.status(200).json("ok");
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+const bulkTour = async (req, res) => {
+  try {
+    const data = req.body.map((place) => ({
+      type_id: place.type_id,
+      name: place.name,
+      overview: place.overview,
+      highlight: place.highlight,
+      start_date: place.start_date,
+      duration: place.duration,
+      slots: place.slots,
+      price: place.price,
+      status: place.status,
+      booking_deadline: place.booking_deadline,
+    }));
+    await db.tours.bulkCreate(data);
+    return res.status(200).json("ok");
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
 module.exports = {
   bulkUser,
   bulkPost,
@@ -94,4 +128,6 @@ module.exports = {
   bulkComment,
   bulkVoucher,
   bulkService,
+  bulkPlace,
+  bulkTour,
 };

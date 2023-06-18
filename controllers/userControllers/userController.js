@@ -62,9 +62,21 @@ const updatePost = async (req, res) => {
     });
   }
   const data = req.body;
-  const result = await userService.handleUpdatePost(Number(req.query.id), data);
 
-  return res.status(200).json(result);
+  if (!req.file) {
+    const result = await userService.handleUpdatePost(
+      Number(req.query.id),
+      data
+    );
+    return res.status(200).json(result);
+  } else {
+    const result = await userService.handleUpdatePost(
+      Number(req.query.id),
+      data,
+      req.file.path
+    );
+    return res.status(200).json(result);
+  }
 };
 
 const deletePost = async (req, res) => {

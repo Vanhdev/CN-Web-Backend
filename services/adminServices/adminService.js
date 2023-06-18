@@ -482,7 +482,7 @@ const handleGetTour = (tourId) => {
   });
 };
 
-const handleEditTour = (idTour, data) => {
+const handleEditTour = (idTour, data, img) => {
   return new Promise(async (resolve, reject) => {
     try {
       const tour = await db.tours.findOne({
@@ -504,8 +504,29 @@ const handleEditTour = (idTour, data) => {
           (tour.status = data.status ? data.status : tour.status),
           (tour.booking_deadline = data.booking_deadline
             ? data.booking_deadline
-            : tour.booking_deadline),
-          await tour.save();
+            : tour.booking_deadline);
+
+        if (img) {
+          const newImgTour = await db.images.create({
+            image_url: img,
+          });
+
+          await db.image_tour.destroy({
+            where: { tour_id: tour.id },
+          });
+
+          await db.image_tour.create(
+            {
+              image_id: newImgTour.id,
+              tour_id: tour.id,
+            },
+            {
+              fields: ["image_id", "tour_id"],
+            }
+          );
+        }
+
+        await tour.save();
         resolve({
           message: "Update successfully",
           tour,
@@ -715,7 +736,7 @@ const handleGetPlace = (id) => {
   });
 };
 
-const handleEditPlace = (id, data) => {
+const handleEditPlace = (id, data, img) => {
   return new Promise(async (resolve, reject) => {
     try {
       const place = await db.places.findOne({
@@ -728,6 +749,25 @@ const handleEditPlace = (id, data) => {
         place.description = data.description
           ? data.description
           : place.description;
+        if (img) {
+          const newImgPlace = await db.images.create({
+            image_url: img,
+          });
+
+          await db.image_place.destroy({
+            where: { place_id: place.id },
+          });
+
+          await db.image_place.create(
+            {
+              image_id: newImgPlace.id,
+              place_id: place.id,
+            },
+            {
+              fields: ["image_id", "place_id"],
+            }
+          );
+        }
         await place.save();
         resolve({
           message: "Update successfully",
