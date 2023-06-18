@@ -1,5 +1,14 @@
 # CN-Web-Backend
 
+### các request (trừ đăng nhập, đăng xuất) có headers là token
+
+```
+const res = await axios.get('http://localhost:8086/users/get-post?id=all', {
+      headers: { token: `Bearer ${accessToken}` },
+});
+
+```
+
 #### Các endpoint:
 
 ##### post
@@ -101,3 +110,9 @@
 ###### /admin/delete-tour?id= : xóa tour
 
 ###### /admin/edit-tour?id= : cập nhật tour
+
+##### book tour
+
+###### /users/book-tour : người dùng đặt tour (body gồm user_id, tour_id, arrival_day, arrival_time)
+
+###### /users/cancel-book-tour?idTour=&idUser= : hủy đặt tour

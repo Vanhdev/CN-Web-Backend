@@ -2,7 +2,6 @@ const db = require("../models/index");
 
 const bulkUser = async (req, res) => {
   try {
-    // console.log(JSON.parse(req.body));
     const data = req.body.map((user) => ({
       name: user.name,
       email: user.email,
@@ -11,8 +10,7 @@ const bulkUser = async (req, res) => {
       date_of_birth: user.date_of_birth,
     }));
 
-    const users = await db.users.bulkCreate(data);
-    console.log(users);
+    await db.users.bulkCreate(data);
     return res.status(200).json("ok");
   } catch (error) {
     console.log(error);

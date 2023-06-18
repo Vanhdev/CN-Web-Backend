@@ -52,7 +52,7 @@ router.delete("/delete-qas", checkAdmin, adminController.deleteQAS);
 router.put("/handle-post", checkAdmin, adminController.handleRequestPost);
 
 // arrival
-router.post("/add-arrival", checkAdmin, adminController.addArrival);
+router.post("/add-arrival", adminController.addArrival);
 router.get("/get-arrival", adminController.getArrival);
 
 module.exports = router;
