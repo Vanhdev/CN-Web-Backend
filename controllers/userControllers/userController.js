@@ -256,6 +256,33 @@ const deleteFavTour = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const bookTour = async (req, res) => {
+  const { user_id, tour_id, arrival_day, arrival_time } = req.body;
+  if (!user_id || !tour_id || !arrival_day || !arrival_time) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const data = { user_id, tour_id, arrival_day, arrival_time };
+  const result = await userService.handleBookTour(data);
+  return res.status(200).json(result);
+};
+
+const cancelBookTour = async (req, res) => {
+  if (!req.query.idTour || !req.query.idUser) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const result = await userService.handleCancleTour(
+    req.query.idTour,
+    req.query.idUser
+  );
+  return res.status(200).json(result);
+};
+
 module.exports = {
   getUserInfo,
   updateUser,
@@ -276,4 +303,6 @@ module.exports = {
   addFavTour,
   getFavTourOfUser,
   deleteFavTour,
+  bookTour,
+  cancelBookTour,
 };

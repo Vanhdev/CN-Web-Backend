@@ -19,6 +19,15 @@ module.exports = function(sequelize, DataTypes) {
     },
     booking_time: {
       type: DataTypes.DATE,
+      allowNull: true,
+      defaultValue: Sequelize.Sequelize.fn('current_timestamp')
+    },
+    arrival_day: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    arrival_time: {
+      type: DataTypes.STRING(255),
       allowNull: true
     }
   }, {

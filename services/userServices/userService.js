@@ -579,6 +579,70 @@ const handleDeleteFavTour = (idTour, idUser) => {
   });
 };
 
+const handleBookTour = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const tourBooking = await db.user_booking_tour.create(
+        {
+          user_id: data?.user_id,
+          tour_id: data?.tour_id,
+          arrival_day: data.arrival_day,
+          arrival_time: data.arrival_time,
+        },
+        {
+          fields: ["user_id", "tour_id", "arrival_day", "arrival_time"],
+        }
+      );
+      resolve({
+        message: "Book tour successfully",
+        tourBooking,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleCancleTour = (idTour, idUser) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.users.findOne({
+        where: { id: idUser },
+      });
+
+      const tour = await db.tours.findOne({
+        where: { id: idTour },
+      });
+
+      if (!user || user.length === 0 || !tour || tour.length === 0) {
+        resolve({
+          message: "User or tour not found",
+        });
+      } else {
+        const tourBooking = await db.user_booking_tour.findOne({
+          where: { user_id: idUser, tour_id: idTour },
+          attributes: { exclude: ["id"] },
+        });
+
+        if (!tourBooking || tourBooking.length === 0) {
+          resolve({
+            message: "Tour not found",
+          });
+        } else {
+          await db.user_booking_tour.destroy({
+            where: { user_id: idUser, tour_id: idTour },
+          });
+          resolve({
+            message: "Cancel booking tour successfully",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   getUserById,
   updateUserByEmail,
@@ -599,4 +663,6 @@ module.exports = {
   handleAddFavTour,
   handleGetFavTourOfUser,
   handleDeleteFavTour,
+  handleBookTour,
+  handleCancleTour,
 };

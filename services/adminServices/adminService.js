@@ -323,15 +323,22 @@ const handleAddTour = (data) => {
       );
 
       // choose arrival
-      await db.tour_arrival.create(
-        {
-          arrival_id: Number(data.arrivalId),
-          tour_id: newTour.id,
-        },
-        {
-          fields: ["arrival_id", "tour_id"],
-        }
-      );
+      const arrival = [];
+      arrival.push({
+        arrival_id: Number(data.arrivalId1),
+        tour_id: newTour.id,
+      });
+      arrival.push({
+        arrival_id: Number(data.arrivalId2),
+        tour_id: newTour.id,
+      });
+      arrival.push({
+        arrival_id: Number(data.arrivalId3),
+        tour_id: newTour.id,
+      });
+      await db.tour_arrival.bulkCreate(arrival, {
+        fields: ["arrival_id", "tour_id"],
+      });
 
       // add img
       const newImg = await db.images.create({

@@ -127,7 +127,9 @@ const addTour = async (req, res) => {
     placeId,
     serviceId,
     voucherId,
-    arrivalId,
+    arrivalId1,
+    arrivalId2,
+    arrivalId3,
   } = req.body;
   const image = req.file.path;
   if (
@@ -144,7 +146,9 @@ const addTour = async (req, res) => {
     !placeId ||
     !serviceId ||
     !voucherId ||
-    !arrivalId ||
+    !arrivalId1 ||
+    !arrivalId2 ||
+    !arrivalId3 ||
     !image
   ) {
     return res.status(200).json({
@@ -165,7 +169,9 @@ const addTour = async (req, res) => {
     placeId,
     serviceId,
     voucherId,
-    arrivalId,
+    arrivalId1,
+    arrivalId2,
+    arrivalId3,
     image,
   });
   return res.status(200).json(result);
