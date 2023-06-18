@@ -14,7 +14,13 @@ router.post(
   adminController.addPlace
 );
 router.get("/get-place", adminController.getPlace);
-router.put("/edit-place", checkAdmin, adminController.updatePlace);
+router.put(
+  "/edit-place",
+  checkAdmin,
+  upload.single("image"),
+  adminController.updatePlace
+);
+router.post("/mock-place", mockController.bulkPlace);
 
 // type tour
 router.post("/add-type", checkAdmin, adminController.addTypeTour);
@@ -42,8 +48,14 @@ router.post(
   adminController.addTour
 );
 router.get("/get-tour", adminController.getTour);
-router.put("/edit-tour", checkAdmin, adminController.editTour);
+router.put(
+  "/edit-tour",
+  checkAdmin,
+  upload.single("image"),
+  adminController.editTour
+);
 router.delete("/delete-tour", checkAdmin, adminController.deleteTour);
+router.post("/mock-tour", mockController.bulkTour);
 
 // qas
 router.put("/ans-qas", checkAdmin, adminController.answerQuestion);
