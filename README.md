@@ -9,11 +9,27 @@ const res = await axios.get('http://localhost:8086/users/get-post?id=all', {
 
 ```
 
+#### Up image ở các request cần ảnh (bắt buộc)
+
+```
+const newPlace = new FormData();
+newPlace.append('name', name);
+// các req.body khác tương tự
+newPlace.append('image', image);
+
+// call api
+addPlace(token, dispatch, newPlace)
+```
+
+```
+<input type='file' required={true} onChange={e => setImage(e.target.files[0])} />
+```
+
 #### Các endpoint:
 
 ##### post
 
-###### /users/add-post : thêm bài viết (body gồm user_id, title, content)
+###### /users/add-post : thêm bài viết (body gồm user_id, title, content, short_description, full description và image)
 
 ###### /users/get-post?id= : lấy bài viết theo id, nếu id=all hoặc ALL thì lấy tất cả bài viết
 
@@ -69,17 +85,13 @@ const res = await axios.get('http://localhost:8086/users/get-post?id=all', {
 
 ###### /admin/edit-typr?id= : cập nhật type
 
-###### /admin/delete-type?id= : xóa type
-
 ##### place
 
-###### /admin/add-place : thêm điểm đến (body gồm name, description)
+###### /admin/add-place : thêm điểm đến (body gồm name, description, image)
 
 ###### /admin/get-place?id= : lấy thông tin về điểm đến, id = all thì lấy danh sách place
 
 ###### /admin/edit-place?id= : cập nhật place
-
-###### /admin/delete-place?id= : xóa place
 
 ##### voucher
 
@@ -89,7 +101,7 @@ const res = await axios.get('http://localhost:8086/users/get-post?id=all', {
 
 ###### /admin/edit-voucher?id= : cập nhật voucher
 
-###### /admin/delete-voucher?id= : xóa voucher
+###### /admin/disable-voucher?id= : hủy voucher (method put)
 
 ##### service
 
@@ -97,13 +109,11 @@ const res = await axios.get('http://localhost:8086/users/get-post?id=all', {
 
 ###### /admin/get-service?id= : lấy ttin dịch vụ, id = all thì lấy ds dịch vụ
 
-###### /admin/delete-service?id= : xóa dịch vụ
-
 ###### /admin/edit-service?id= : cập nhật dịch vụ
 
 ##### tour
 
-###### /admin/add-tour: thêm tour (body gồm type_id, name, overview, highlight, start_date, duration, slots, price, status ,booking_deadline ,placeId ,serviceId, voucherId)
+###### /admin/add-tour: thêm tour (body gồm type_id, name, overview, highlight, start_date, duration, slots, price, status ,booking_deadline ,placeId ,serviceId, voucherId, image)
 
 ###### /admin/get-tour?id= : lấy thông tin tour, id = all lấy ds tour
 
@@ -111,8 +121,18 @@ const res = await axios.get('http://localhost:8086/users/get-post?id=all', {
 
 ###### /admin/edit-tour?id= : cập nhật tour
 
+#### Các api get book tour/get fav tour trả về id của tour đấy, gọi thêm api get tour để lấy thông tin chi tiết
+
 ##### book tour
 
 ###### /users/book-tour : người dùng đặt tour (body gồm user_id, tour_id, arrival_day, arrival_time)
 
 ###### /users/cancel-book-tour?idTour=&idUser= : hủy đặt tour
+
+##### favorite tour
+
+###### /users/add-fav-tour : thêm tour yêu thích (body gồm user_id, tour_id)
+
+###### /users/get-fav-tour?idUser= : lấy danh sách tour yêu thích
+
+###### /users/delete-fav-tour?idTour=?idUser= : xóa tour yêu thích

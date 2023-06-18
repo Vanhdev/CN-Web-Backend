@@ -61,4 +61,37 @@ const bulkComment = async (req, res) => {
   }
 };
 
-module.exports = { bulkUser, bulkPost, bulkQAS, bulkComment };
+const bulkVoucher = async (req, res) => {
+  try {
+    const data = req.body.map((voucher) => ({
+      name: voucher.name,
+      discount: voucher.discount,
+    }));
+    await db.vouchers.bulkCreate(data);
+    return res.status(200).json("ok");
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+const bulkService = async (req, res) => {
+  try {
+    const data = req.body.map((service) => ({
+      name: service.name,
+      description: service.description,
+    }));
+    await db.services.bulkCreate(data);
+    return res.status(200).json("ok");
+  } catch (error) {
+    return res.status(500).json(error);
+  }
+};
+
+module.exports = {
+  bulkUser,
+  bulkPost,
+  bulkQAS,
+  bulkComment,
+  bulkVoucher,
+  bulkService,
+};

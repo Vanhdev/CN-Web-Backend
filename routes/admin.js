@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const adminController = require("../controllers/adminControllers/adminController");
+const mockController = require("../controllers/mockDataController");
 const multer = require("multer");
 const { checkAdmin, checkToken } = require("../middleware/middleware");
 const upload = multer({ dest: "uploads/" });
@@ -13,7 +14,6 @@ router.post(
   adminController.addPlace
 );
 router.get("/get-place", adminController.getPlace);
-router.delete("/delete-place", checkAdmin, adminController.deletePlace);
 router.put("/edit-place", checkAdmin, adminController.updatePlace);
 
 // type tour
@@ -24,14 +24,15 @@ router.get("/get-type", checkToken, adminController.getTypeTour);
 // service tour
 router.post("/add-service", checkAdmin, adminController.addService);
 router.get("/get-service", checkToken, adminController.getService);
-router.delete("/delete-service", checkAdmin, adminController.deleteService);
 router.put("/edit-service", checkAdmin, adminController.editService);
+router.post("/mock-service", mockController.bulkService);
 
 // voucher tour
+router.post("/mock-voucher", mockController.bulkVoucher);
 router.post("/add-voucher", checkAdmin, adminController.addVoucher);
 router.get("/get-voucher", checkToken, adminController.getVoucher);
-router.delete("/delete-voucher", checkAdmin, adminController.deleteVoucher);
 router.put("/edit-voucher", checkAdmin, adminController.editVoucher);
+router.put("/disable-voucher", checkAdmin, adminController.disableVoucher);
 
 // tour
 router.post(

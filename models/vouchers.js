@@ -14,6 +14,10 @@ module.exports = function(sequelize, DataTypes) {
     discount: {
       type: DataTypes.INTEGER,
       allowNull: true
+    },
+    deleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true
     }
   }, {
     sequelize,

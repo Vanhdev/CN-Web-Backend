@@ -22,7 +22,12 @@ router.put("/update-user", checkToken, userController.updateUser);
 router.post("/add-mul-post", mockController.bulkPost);
 
 // post
-router.post("/add-post", checkToken, userController.createPost);
+router.post(
+  "/add-post",
+  checkToken,
+  upload.single("image"),
+  userController.createPost
+);
 router.get("/get-post", checkToken, userController.getPost);
 router.put("/update-post", checkToken, userController.updatePost);
 router.delete("/delete-post", checkToken, userController.deletePost);

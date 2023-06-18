@@ -119,34 +119,6 @@ const getServiceAdmin = (serviceId) => {
   });
 };
 
-const deleteServiceAdmin = (serviceId) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const service = await db.services.findOne({
-        where: { id: serviceId },
-        raw: false,
-      });
-
-      if (service) {
-        await db.tour_service.destroy({
-          where: { service_id: serviceId },
-        });
-
-        await service.destroy();
-        resolve({
-          message: "Delete service successfully",
-        });
-      } else {
-        resolve({
-          message: "Service not found",
-        });
-      }
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
-
 const editServiceAdmin = (serviceId, data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -218,34 +190,6 @@ const getVoucherAdmin = (voucherId) => {
   });
 };
 
-const deleteVoucherAdmin = (voucherId) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const voucher = await db.vouchers.findOne({
-        where: { id: voucherId },
-        raw: false,
-      });
-
-      if (voucher) {
-        await db.tour_voucher.destroy({
-          where: { voucher_id: voucherId },
-        });
-
-        await voucher.destroy();
-        resolve({
-          message: "Delete voucher successfully",
-        });
-      } else {
-        resolve({
-          message: "Voucher not found",
-        });
-      }
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
-
 const editVoucherAdmin = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -260,6 +204,32 @@ const editVoucherAdmin = (id, data) => {
         await voucher.save();
         resolve({
           message: "Update successfully",
+          voucher,
+        });
+      } else {
+        resolve({
+          message: "Voucher not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleDisableVoucher = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const voucher = await db.vouchers.findOne({
+        where: { id: id },
+        raw: false,
+      });
+
+      if (voucher) {
+        voucher.deleted = true;
+        await voucher.save();
+        resolve({
+          message: "Disable voucer successfully",
           voucher,
         });
       } else {
@@ -474,6 +444,26 @@ const handleGetTour = (tourId) => {
           where: { id: idVoucher.voucher_id },
         });
 
+        // get rate
+        const rates = await db.rates.findAll({
+          where: { tour_id: tour.id },
+          attributes: { exclude: ["id"] },
+        });
+
+        let allPoint = 0;
+        let pointTour = 0;
+        if (rates.length > 0) {
+          rates.forEach((rate) => {
+            allPoint +=
+              (rate.location_rate +
+                rate.service_rate +
+                rate.price_rate +
+                rate.infrastructure_rate) /
+              4;
+          });
+          pointTour = allPoint / rates.length;
+        }
+
         resolve({
           message: "OK",
           tour,
@@ -483,6 +473,7 @@ const handleGetTour = (tourId) => {
           arrival2,
           arrival3,
           voucher,
+          pointTour,
         });
       }
     } catch (error) {
@@ -704,41 +695,18 @@ const handleGetPlace = (id) => {
           });
         }
 
+        const idImg = await db.image_place.findOne({
+          where: { place_id: place.id },
+          attributes: { exclude: ["id"] },
+        });
+        const link = await db.images.findOne({
+          where: { id: idImg.image_id },
+        });
+
         resolve({
           message: "OK",
           place,
-        });
-      }
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
-
-const handleDeletePlace = (id) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const place = await db.places.findOne({
-        where: { id: id },
-        raw: false,
-      });
-
-      if (place) {
-        await db.tour_place.destroy({
-          where: { place_id: id },
-        });
-
-        await db.image_place.destroy({
-          where: { place_id: id },
-        });
-
-        await place.destroy();
-        resolve({
-          message: "Delete place successfully",
-        });
-      } else {
-        resolve({
-          message: "Place not found",
+          link,
         });
       }
     } catch (error) {
@@ -826,11 +794,10 @@ module.exports = {
   getTypeTourById,
   addServiceTour,
   getServiceAdmin,
-  deleteServiceAdmin,
   editServiceAdmin,
   addVoucerAdmin,
   getVoucherAdmin,
-  deleteVoucherAdmin,
+  handleDisableVoucher,
   editVoucherAdmin,
   handleAddTour,
   handleGetTour,
@@ -841,7 +808,6 @@ module.exports = {
   adminHandleReqPost,
   handleAddPlace,
   handleGetPlace,
-  handleDeletePlace,
   handleEditPlace,
   handleAddArrival,
   handleGetArrival,
