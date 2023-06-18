@@ -64,6 +64,21 @@ const handleCreatePost = (data) => {
           user_id: data?.user_id,
           status: "false",
         });
+
+        // add img for post
+        const newImg = await db.images.create({
+          image_url: data.image,
+        });
+        await db.image_post.create(
+          {
+            post_id: newPost.id,
+            image_id: newImg.id,
+          },
+          {
+            fields: ["image_id", "post_id"],
+          }
+        );
+
         resolve({
           message: "Create post successfully",
           newPost,
@@ -96,9 +111,23 @@ const handleGetPost = (postId) => {
           });
         }
 
+        const user = await db.users.findOne({
+          where: { id: post.user_id },
+        });
+
+        const idImg = await db.image_post.findOne({
+          where: { post_id: post.id },
+          attributes: { exclude: ["id"] },
+        });
+        const link = await db.images.findOne({
+          where: { id: idImg.image_id },
+        });
+
         resolve({
           message: "OK",
           post,
+          user,
+          link,
         });
       }
     } catch (error) {
@@ -118,6 +147,12 @@ const handleUpdatePost = (postId, data) => {
       if (post) {
         post.title = data.title ? data.title : post.title;
         post.content = data.content ? data.content : post.content;
+        post.full_description = data.full_description
+          ? data.full_description
+          : post.full_description;
+        post.short_description = data.short_description
+          ? data.short_description
+          : post.short_description;
 
         await post.save();
         resolve({
@@ -148,6 +183,9 @@ const handleDeletePost = (postId) => {
           where: { post_id: Number(postId) },
         });
         if (!comments || comments.length === 0) {
+          await db.image_post.destroy({
+            where: { post_id: Number(postId) },
+          });
           await post.destroy();
           resolve({
             message: "Delete post successfully",
@@ -213,9 +251,14 @@ const handleGetQuestion = (idQAS) => {
           });
         }
 
+        const user = await db.users.findOne({
+          where: { id: question.user_id },
+        });
+
         resolve({
           message: "OK",
           question,
+          user,
         });
       }
     } catch (error) {
@@ -266,9 +309,18 @@ const handleGetCommentOfPost = (idPost) => {
           });
         }
 
+        const listCmt = await Promise.all(
+          comments.map(async (cmt) => {
+            const user = await db.users.findOne({
+              where: { id: cmt.user_id },
+            });
+            return { ...cmt, user };
+          })
+        );
+
         resolve({
           message: "OK",
-          comments,
+          listCmt,
         });
       } else {
         resolve({

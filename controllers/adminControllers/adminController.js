@@ -48,16 +48,6 @@ const getService = async (req, res) => {
   return res.status(200).json(result);
 };
 
-const deleteService = async (req, res) => {
-  if (!req.query.id) {
-    return res.status(200).json({
-      message: "Missing required paramter",
-    });
-  }
-  const result = await adminService.deleteServiceAdmin(req.query.id);
-  return res.status(200).json(result);
-};
-
 const editService = async (req, res) => {
   if (!req.query.id) {
     return res.status(200).json({
@@ -89,16 +79,6 @@ const getVoucher = async (req, res) => {
   return res.status(200).json(result);
 };
 
-const deleteVoucher = async (req, res) => {
-  if (!req.query.id) {
-    return res.status(200).json({
-      message: "Missing required paramter",
-    });
-  }
-  const result = await adminService.deleteVoucherAdmin(req.query.id);
-  return res.status(200).json(result);
-};
-
 const editVoucher = async (req, res) => {
   if (!req.query.id) {
     return res.status(200).json({
@@ -108,6 +88,18 @@ const editVoucher = async (req, res) => {
 
   const data = req.body;
   const result = await adminService.editVoucherAdmin(req.query.id, data);
+
+  return res.status(200).json(result);
+};
+
+const disableVoucher = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+
+  const result = await adminService.handleDisableVoucher(req.query.id);
 
   return res.status(200).json(result);
 };
@@ -264,16 +256,6 @@ const getPlace = async (req, res) => {
   return res.status(200).json(result);
 };
 
-const deletePlace = async (req, res) => {
-  if (!req.query.id) {
-    return res.status(200).json({
-      message: "Missing required paramter",
-    });
-  }
-  const result = await adminService.handleDeletePlace(req.query.id);
-  return res.status(200).json(result);
-};
-
 const updatePlace = async (req, res) => {
   if (!req.query.id) {
     return res.status(200).json({
@@ -313,12 +295,11 @@ module.exports = {
   getTypeTour,
   addService,
   getService,
-  deleteService,
   editService,
   addVoucher,
   getVoucher,
-  deleteVoucher,
   editVoucher,
+  disableVoucher,
   addTour,
   getTour,
   editTour,
@@ -328,7 +309,6 @@ module.exports = {
   handleRequestPost,
   addPlace,
   getPlace,
-  deletePlace,
   updatePlace,
   addArrival,
   getArrival,
