@@ -12,7 +12,7 @@ router.post(
   upload.single("image"),
   adminController.addPlace
 );
-router.get("/get-place", checkToken, adminController.getPlace);
+router.get("/get-place", adminController.getPlace);
 router.delete("/delete-place", checkAdmin, adminController.deletePlace);
 router.put("/edit-place", checkAdmin, adminController.updatePlace);
 
@@ -40,7 +40,7 @@ router.post(
   upload.single("image"),
   adminController.addTour
 );
-router.get("/get-tour", checkToken, adminController.getTour);
+router.get("/get-tour", adminController.getTour);
 router.put("/edit-tour", checkAdmin, adminController.editTour);
 router.delete("/delete-tour", checkAdmin, adminController.deleteTour);
 

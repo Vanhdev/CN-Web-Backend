@@ -369,7 +369,52 @@ const handleGetTour = (tourId) => {
     try {
       if (tourId.toLowerCase() === "all") {
         const allTours = await db.tours.findAll();
-        resolve(allTours);
+        const listTour = await Promise.all(
+          allTours.map(async (tour) => {
+            const imageTour = await db.image_tour.findOne({
+              where: { tour_id: tour.id },
+              attributes: { exclude: ["id"] },
+            });
+
+            const placeTour = await db.tour_place.findOne({
+              where: { tour_id: tour.id },
+              attributes: { exclude: ["id"] },
+            });
+
+            const rates = await db.rates.findAll({
+              where: { tour_id: tour.id },
+              attributes: { exclude: ["id"] },
+            });
+
+            let allPoint = 0;
+            let pointTour = 0;
+            if (rates.length > 0) {
+              rates.forEach((rate) => {
+                allPoint +=
+                  (rate.location_rate +
+                    rate.service_rate +
+                    rate.price_rate +
+                    rate.infrastructure_rate) /
+                  4;
+              });
+              pointTour = allPoint / rates.length;
+            }
+
+            if (!imageTour || !placeTour) {
+              return { ...tour, pointTour };
+            } else {
+              const img = await db.images.findOne({
+                where: { id: imageTour.image_id },
+              });
+
+              const place = await db.places.findOne({
+                where: { id: placeTour.place_id },
+              });
+              return { ...tour, img, place, pointTour };
+            }
+          })
+        );
+        resolve(listTour);
       } else {
         const tour = await db.tours.findOne({
           where: { id: tourId },
@@ -381,9 +426,63 @@ const handleGetTour = (tourId) => {
           });
         }
 
+        // get image
+        const idImg = await db.image_tour.findOne({
+          where: { tour_id: tourId },
+          attributes: { exclude: ["id"] },
+        });
+
+        const linkImg = await db.images.findOne({
+          where: { id: idImg.image_id },
+        });
+
+        // get place
+        const idPlace = await db.tour_place.findOne({
+          where: { tour_id: tourId },
+          attributes: { exclude: ["id"] },
+        });
+
+        const place = await db.places.findOne({
+          where: { id: idPlace.place_id },
+        });
+
+        // get arrival
+        const idArrival = await db.tour_arrival.findAll({
+          where: { tour_id: tourId },
+          attributes: { exclude: ["id"] },
+        });
+
+        const arrival1 = await db.arrivals.findOne({
+          where: { id: idArrival[0].arrival_id },
+        });
+
+        const arrival2 = await db.arrivals.findOne({
+          where: { id: idArrival[1].arrival_id },
+        });
+
+        const arrival3 = await db.arrivals.findOne({
+          where: { id: idArrival[2].arrival_id },
+        });
+
+        // get voucher
+        const idVoucher = await db.tour_voucher.findOne({
+          where: { tour_id: tourId },
+          attributes: { exclude: ["id"] },
+        });
+
+        const voucher = await db.vouchers.findOne({
+          where: { id: idVoucher.voucher_id },
+        });
+
         resolve({
           message: "OK",
           tour,
+          linkImg,
+          place,
+          arrival1,
+          arrival2,
+          arrival3,
+          voucher,
         });
       }
     } catch (error) {
