@@ -67,6 +67,7 @@ const handleCreatePost = (data) => {
           full_description: data?.full_description,
           num_like: 0,
           num_dislike: 0,
+          topic: data?.topic,
         });
 
         // add img for post

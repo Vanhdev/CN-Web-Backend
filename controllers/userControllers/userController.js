@@ -33,10 +33,23 @@ const updateUser = async (req, res) => {
 };
 
 const createPost = async (req, res) => {
-  const { title, content, user_id, short_description, full_description } =
-    req.body;
+  const {
+    title,
+    content,
+    user_id,
+    short_description,
+    full_description,
+    topic,
+  } = req.body;
   const image = req.file.path;
-  if (!title || !content || !user_id || !short_description || !full_description)
+  if (
+    !title ||
+    !content ||
+    !user_id ||
+    !short_description ||
+    !full_description ||
+    !topic
+  )
     return res.status(200).json({
       message: "Missing required parameter",
     });
@@ -47,6 +60,7 @@ const createPost = async (req, res) => {
     image,
     short_description,
     full_description,
+    topic,
   };
   const result = await userService.handleCreatePost(data);
   return res.status(200).json(result);
