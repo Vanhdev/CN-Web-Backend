@@ -115,7 +115,7 @@ addPlace(token, dispatch, newPlace)
 
 ##### tour
 
-###### /admin/add-tour: thêm tour (body gồm type_id, name, overview, highlight, start_date, duration, slots, price, status ,booking_deadline ,placeId ,serviceId, voucherId, image)
+###### /admin/add-tour: thêm tour (body gồm type_id, name, overview, highlight, start_date, duration, slots, price, status ,booking_deadline ,placeId ,serviceId, voucherId, arrivalId1, arrivalId2, arrivalId3, image)
 
 ###### /admin/get-tour?id= : lấy thông tin tour, id = all lấy ds tour
 
