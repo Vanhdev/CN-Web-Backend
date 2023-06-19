@@ -37,6 +37,18 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
       },
+      num_like: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      num_dislike: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      topic: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
     },
     {
       sequelize,
