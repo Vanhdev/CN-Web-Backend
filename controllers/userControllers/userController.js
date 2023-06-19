@@ -33,13 +33,21 @@ const updateUser = async (req, res) => {
 };
 
 const createPost = async (req, res) => {
-  const { title, content, user_id } = req.body;
+  const { title, content, user_id, short_description, full_description } =
+    req.body;
   const image = req.file.path;
-  if (!title || !content || !user_id)
+  if (!title || !content || !user_id || !short_description || !full_description)
     return res.status(200).json({
       message: "Missing required parameter",
     });
-  const data = { title, content, user_id, image };
+  const data = {
+    title,
+    content,
+    user_id,
+    image,
+    short_description,
+    full_description,
+  };
   const result = await userService.handleCreatePost(data);
   return res.status(200).json(result);
 };
@@ -296,6 +304,19 @@ const cancelBookTour = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const reactPost = async (req, res) => {
+  const { post_id, action } = req.body;
+  if (!post_id || !action) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const data = { post_id, action };
+  const result = await userService.handleReactPost(data);
+  return res.status(200).json(result);
+};
+
 module.exports = {
   getUserInfo,
   updateUser,
@@ -318,4 +339,5 @@ module.exports = {
   deleteFavTour,
   bookTour,
   cancelBookTour,
+  reactPost,
 };

@@ -29,13 +29,15 @@ addPlace(token, dispatch, newPlace)
 
 ##### post
 
-###### /users/add-post : thêm bài viết (body gồm user_id, title, content, short_description, full description và image)
+###### /users/add-post : thêm bài viết (body gồm user_id, title, content, short_description, full description, topic và image)
 
 ###### /users/get-post?id= : lấy bài viết theo id, nếu id=all hoặc ALL thì lấy tất cả bài viết
 
 ###### /users/delete-post?id= : xóa bài viết theo id
 
 ###### /users/update-post?id= : chỉnh sửa bài viết
+
+###### /users/react-post : (method put) like/dislike bài viết (body gồm post_id và action (action='like' hoặc 'dislike'))
 
 ##### QAS
 

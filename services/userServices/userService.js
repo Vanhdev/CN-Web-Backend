@@ -63,6 +63,10 @@ const handleCreatePost = (data) => {
           content: data?.content,
           user_id: data?.user_id,
           status: "false",
+          short_description: data?.short_description,
+          full_description: data?.full_description,
+          num_like: 0,
+          num_dislike: 0,
         });
 
         // add img for post
@@ -153,6 +157,7 @@ const handleUpdatePost = (postId, data, img) => {
         post.short_description = data.short_description
           ? data.short_description
           : post.short_description;
+        post.topic = data.topic ? data.topic : post.topic;
 
         if (img) {
           const newImgPost = await db.images.create({
@@ -715,6 +720,40 @@ const handleCancleTour = (idTour, idUser) => {
   });
 };
 
+const handleReactPost = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const post = await db.posts.findOne({
+        where: { id: data.post_id },
+        raw: false,
+      });
+
+      if (!post) {
+        resolve({
+          message: "Post not found",
+        });
+      }
+      if (data.action === "like") {
+        post.num_like = post.num_like + 1;
+        post.save();
+        resolve({
+          message: "Like post successfully",
+          post,
+        });
+      } else {
+        post.num_dislike = post.num_dislike + 1;
+        post.save();
+        resolve({
+          message: "Dislike post successfully",
+          post,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   getUserById,
   updateUserByEmail,
@@ -737,4 +776,5 @@ module.exports = {
   handleDeleteFavTour,
   handleBookTour,
   handleCancleTour,
+  handleReactPost,
 };
