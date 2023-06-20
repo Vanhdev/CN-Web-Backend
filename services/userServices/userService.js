@@ -220,6 +220,9 @@ const handleDeletePost = (postId) => {
           await db.comments.destroy({
             where: { post_id: Number(postId) },
           });
+          await db.image_post.destroy({
+            where: { post_id: Number(postId) },
+          });
 
           await post.destroy();
           resolve({
