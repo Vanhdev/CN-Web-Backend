@@ -705,7 +705,25 @@ const handleGetPlace = (id) => {
     try {
       if (id.toLowerCase() === "all") {
         const allPlaces = await db.places.findAll();
-        resolve(allPlaces);
+        const listPlace = await Promise.all(
+          allPlaces.map(async (place) => {
+            const imagePlace = await db.image_place.findOne({
+              where: { place_id: place.id },
+              attributes: { exclude: ["id"] },
+            });
+
+            if (!imagePlace) {
+              return place;
+            } else {
+              const img = await db.images.findOne({
+                where: { id: imagePlace.image_id },
+              });
+
+              return { ...place, img };
+            }
+          })
+        );
+        resolve(listPlace);
       } else {
         const place = await db.places.findOne({
           where: { id: id },
@@ -853,12 +871,10 @@ const handleCountTours = () => {
 const handleCountBookingTours = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const count = await db.user_booking_tour.count(
-        {
-          distinct: true,
-          col: 'tour_id'
-        }
-      );
+      const count = await db.user_booking_tour.count({
+        distinct: true,
+        col: "tour_id",
+      });
       if (count) {
         resolve({
           message: "OK",
@@ -898,19 +914,18 @@ const handleCountUsers = () => {
 const handleCountProfits = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      
       const tours = await db.tours.findAll();
       const user_booking_tours = await db.user_booking_tour.findAll({
         attributes: { exclude: ["id"] },
       });
-      setTimeout(()=> {
+      setTimeout(() => {
         if (tours && user_booking_tours) {
           console.log(tours);
           console.log(user_booking_tours);
           var profits = 0;
-          user_booking_tours.forEach(user_booking_tour => {
-            tours.forEach(tour => {
-              if(user_booking_tour.tour_id === tour.id) profits += tour.price;
+          user_booking_tours.forEach((user_booking_tour) => {
+            tours.forEach((tour) => {
+              if (user_booking_tour.tour_id === tour.id) profits += tour.price;
             });
           });
           resolve({
@@ -955,5 +970,5 @@ module.exports = {
   handleCountTours,
   handleCountBookingTours,
   handleCountUsers,
-  handleCountProfits
+  handleCountProfits,
 };
