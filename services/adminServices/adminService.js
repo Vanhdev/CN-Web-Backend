@@ -1,4 +1,5 @@
 const db = require("../../models/index");
+const user_booking_tour = require("../../models/user_booking_tour");
 
 const creatTypeTour = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -714,6 +715,112 @@ const handleGetArrival = (id) => {
   });
 };
 
+const handleCountTours = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const count = await db.tours.count();
+
+      if (count) {
+        resolve({
+          message: "OK",
+          count,
+        });
+      } else {
+        resolve({
+          message: "Cannot count tours",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const countTours = (tours) => {
+    var count = 0
+    
+    console.log(count);
+    return count;
+}
+const handleCountBookingTours = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const count = await db.user_booking_tour.count(
+        {
+          distinct: true,
+          col: 'tour_id'
+        }
+      );
+      if (count) {
+        resolve({
+          message: "OK",
+          booking_tours_count: count,
+        });
+      } else {
+        resolve({
+          message: "Cannot count booking tours",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+const handleCountUsers = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const count = await db.users.count();
+
+      if (count) {
+        resolve({
+          message: "OK",
+          users_count: count,
+        });
+      } else {
+        resolve({
+          message: "Cannot find and count users",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleCountProfits = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      
+      const tours = await db.tours.findAll();
+      const user_booking_tours = await db.user_favorite_tour.findAll({
+        attributes: { exclude: ["id"] },
+      });
+      setTimeout(()=> {
+        if (tours && user_booking_tours) {
+          console.log(tours);
+          console.log(user_booking_tours);
+          var profits = 0;
+          user_booking_tours.forEach(user_booking_tour => {
+            tours.forEach(tour => {
+              if(user_booking_tour.tour_id === tour.id) profits += tour.price;
+            });
+          });
+          resolve({
+            message: "OK",
+            profits,
+          });
+        } else {
+          resolve({
+            message: "Cannot count profits",
+          });
+        }
+      }, 500);
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   creatTypeTour,
   updateType,
@@ -739,4 +846,8 @@ module.exports = {
   handleEditPlace,
   handleAddArrival,
   handleGetArrival,
+  handleCountTours,
+  handleCountBookingTours,
+  handleCountUsers,
+  handleCountProfits
 };

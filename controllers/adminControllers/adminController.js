@@ -1,3 +1,4 @@
+const { json } = require("body-parser");
 const adminService = require("../../services/adminServices/adminService");
 
 const addTypeTour = async (req, res) => {
@@ -301,6 +302,21 @@ const getArrival = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const countTours = async (req, res) => {
+  const result = await adminService.handleCountTours();
+  return res.status(200).json(result);
+}
+
+const countBookingTours = async (req, res) => {
+  const result = await adminService.handleCountBookingTours();
+  return res.status(200).json(result);
+}
+
+const countProfits = async (req, res) => {
+  const result = await adminService.handleCountProfits();
+  return res.status(200).json(result);
+}
+
 module.exports = {
   addTypeTour,
   updateType,
@@ -326,4 +342,7 @@ module.exports = {
   updatePlace,
   addArrival,
   getArrival,
+  countTours,
+  countBookingTours,
+  countProfits
 };

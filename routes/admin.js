@@ -49,10 +49,14 @@ router.put("/ans-qas", checkAdmin, adminController.answerQuestion);
 router.delete("/delete-qas", checkAdmin, adminController.deleteQAS);
 
 // post
-router.put("/handle-post", checkAdmin, adminController.handleRequestPost);
+router.put("/handle-post", checkToken, adminController.handleRequestPost);
 
 // arrival
 router.post("/add-arrival", checkAdmin, adminController.addArrival);
 router.get("/get-arrival", adminController.getArrival);
+
+router.get("/count-tours", checkAdmin, adminController.countTours);
+router.get("/count-booking-tours", checkAdmin, adminController.countBookingTours);
+router.get("/count-profits", checkAdmin, adminController.countProfits);
 
 module.exports = router;
