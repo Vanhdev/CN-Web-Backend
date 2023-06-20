@@ -21,6 +21,14 @@ module.exports = function(sequelize, DataTypes) {
     booking_time: {
       type: DataTypes.DATE,
       allowNull: true
+    },
+    arrival_day: {
+      type: DataTypes.STRING(255),
+      allowNull: true
+    },
+    arrival_time: {
+      type: DataTypes.STRING(255),
+      allowNull: true
     }
   }, {
     sequelize,

@@ -63,7 +63,27 @@ const handleCreatePost = (data) => {
           content: data?.content,
           user_id: data?.user_id,
           status: "false",
+          short_description: data?.short_description,
+          full_description: data?.full_description,
+          num_like: 0,
+          num_dislike: 0,
+          topic: data?.topic,
         });
+
+        // add img for post
+        const newImg = await db.images.create({
+          image_url: data.image,
+        });
+        await db.image_post.create(
+          {
+            post_id: newPost.id,
+            image_id: newImg.id,
+          },
+          {
+            fields: ["image_id", "post_id"],
+          }
+        );
+
         resolve({
           message: "Create post successfully",
           newPost,
@@ -96,9 +116,23 @@ const handleGetPost = (postId) => {
           });
         }
 
+        const user = await db.users.findOne({
+          where: { id: post.user_id },
+        });
+
+        const idImg = await db.image_post.findOne({
+          where: { post_id: post.id },
+          attributes: { exclude: ["id"] },
+        });
+        const link = await db.images.findOne({
+          where: { id: idImg.image_id },
+        });
+
         resolve({
           message: "OK",
           post,
+          user,
+          link,
         });
       }
     } catch (error) {
@@ -107,7 +141,7 @@ const handleGetPost = (postId) => {
   });
 };
 
-const handleUpdatePost = (postId, data) => {
+const handleUpdatePost = (postId, data, img) => {
   return new Promise(async (resolve, reject) => {
     try {
       const post = await db.posts.findOne({
@@ -118,6 +152,33 @@ const handleUpdatePost = (postId, data) => {
       if (post) {
         post.title = data.title ? data.title : post.title;
         post.content = data.content ? data.content : post.content;
+        post.full_description = data.full_description
+          ? data.full_description
+          : post.full_description;
+        post.short_description = data.short_description
+          ? data.short_description
+          : post.short_description;
+        post.topic = data.topic ? data.topic : post.topic;
+
+        if (img) {
+          const newImgPost = await db.images.create({
+            image_url: img,
+          });
+
+          await db.image_post.destroy({
+            where: { post_id: post.id },
+          });
+
+          await db.image_post.create(
+            {
+              image_id: newImgPost.id,
+              post_id: post.id,
+            },
+            {
+              fields: ["image_id", "post_id"],
+            }
+          );
+        }
 
         await post.save();
         resolve({
@@ -148,6 +209,9 @@ const handleDeletePost = (postId) => {
           where: { post_id: Number(postId) },
         });
         if (!comments || comments.length === 0) {
+          await db.image_post.destroy({
+            where: { post_id: Number(postId) },
+          });
           await post.destroy();
           resolve({
             message: "Delete post successfully",
@@ -213,9 +277,14 @@ const handleGetQuestion = (idQAS) => {
           });
         }
 
+        const user = await db.users.findOne({
+          where: { id: question.user_id },
+        });
+
         resolve({
           message: "OK",
           question,
+          user,
         });
       }
     } catch (error) {
@@ -266,9 +335,18 @@ const handleGetCommentOfPost = (idPost) => {
           });
         }
 
+        const listCmt = await Promise.all(
+          comments.map(async (cmt) => {
+            const user = await db.users.findOne({
+              where: { id: cmt.user_id },
+            });
+            return { ...cmt, user };
+          })
+        );
+
         resolve({
           message: "OK",
-          comments,
+          listCmt,
         });
       } else {
         resolve({
@@ -579,6 +657,104 @@ const handleDeleteFavTour = (idTour, idUser) => {
   });
 };
 
+const handleBookTour = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const tourBooking = await db.user_booking_tour.create(
+        {
+          user_id: data?.user_id,
+          tour_id: data?.tour_id,
+          arrival_day: data.arrival_day,
+          arrival_time: data.arrival_time,
+        },
+        {
+          fields: ["user_id", "tour_id", "arrival_day", "arrival_time"],
+        }
+      );
+      resolve({
+        message: "Book tour successfully",
+        tourBooking,
+      });
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleCancleTour = (idTour, idUser) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.users.findOne({
+        where: { id: idUser },
+      });
+
+      const tour = await db.tours.findOne({
+        where: { id: idTour },
+      });
+
+      if (!user || user.length === 0 || !tour || tour.length === 0) {
+        resolve({
+          message: "User or tour not found",
+        });
+      } else {
+        const tourBooking = await db.user_booking_tour.findOne({
+          where: { user_id: idUser, tour_id: idTour },
+          attributes: { exclude: ["id"] },
+        });
+
+        if (!tourBooking || tourBooking.length === 0) {
+          resolve({
+            message: "Tour not found",
+          });
+        } else {
+          await db.user_booking_tour.destroy({
+            where: { user_id: idUser, tour_id: idTour },
+          });
+          resolve({
+            message: "Cancel booking tour successfully",
+          });
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleReactPost = (data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const post = await db.posts.findOne({
+        where: { id: data.post_id },
+        raw: false,
+      });
+
+      if (!post) {
+        resolve({
+          message: "Post not found",
+        });
+      }
+      if (data.action === "like") {
+        post.num_like = post.num_like + 1;
+        post.save();
+        resolve({
+          message: "Like post successfully",
+          post,
+        });
+      } else {
+        post.num_dislike = post.num_dislike + 1;
+        post.save();
+        resolve({
+          message: "Dislike post successfully",
+          post,
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   getUserById,
   updateUserByEmail,
@@ -599,4 +775,7 @@ module.exports = {
   handleAddFavTour,
   handleGetFavTourOfUser,
   handleDeleteFavTour,
+  handleBookTour,
+  handleCancleTour,
+  handleReactPost,
 };

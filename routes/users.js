@@ -22,9 +22,19 @@ router.put("/update-user", checkToken, userController.updateUser);
 router.post("/add-mul-post", mockController.bulkPost);
 
 // post
-router.post("/add-post", checkToken, userController.createPost);
+router.post(
+  "/add-post",
+  checkToken,
+  upload.single("image"),
+  userController.createPost
+);
 router.get("/get-post", checkToken, userController.getPost);
-router.put("/update-post", checkToken, userController.updatePost);
+router.put(
+  "/update-post",
+  checkToken,
+  upload.single("image"),
+  userController.updatePost
+);
 router.delete("/delete-post", checkToken, userController.deletePost);
 
 // mock qas
@@ -53,5 +63,12 @@ router.put("/edit-rate", checkToken, userController.editRate);
 router.post("/add-fav-tour", checkToken, userController.addFavTour);
 router.get("/get-fav-tour", checkToken, userController.getFavTourOfUser);
 router.delete("/delete-fav-tour", checkToken, userController.deleteFavTour);
+
+// booking tour
+router.post("/book-tour", checkToken, userController.bookTour);
+router.delete("/cancel-book-tour", checkToken, userController.cancelBookTour);
+
+// like - dislike post
+router.put("/react-post", checkToken, userController.reactPost);
 
 module.exports = router;

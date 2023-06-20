@@ -33,12 +33,35 @@ const updateUser = async (req, res) => {
 };
 
 const createPost = async (req, res) => {
-  const { title, content, user_id } = req.body;
-  if (!title || !content || !user_id)
+  const {
+    title,
+    content,
+    user_id,
+    short_description,
+    full_description,
+    topic,
+  } = req.body;
+  const image = req.file.path;
+  if (
+    !title ||
+    !content ||
+    !user_id ||
+    !short_description ||
+    !full_description ||
+    !topic
+  )
     return res.status(200).json({
       message: "Missing required parameter",
     });
-  const data = { title, content, user_id };
+  const data = {
+    title,
+    content,
+    user_id,
+    image,
+    short_description,
+    full_description,
+    topic,
+  };
   const result = await userService.handleCreatePost(data);
   return res.status(200).json(result);
 };
@@ -61,9 +84,21 @@ const updatePost = async (req, res) => {
     });
   }
   const data = req.body;
-  const result = await userService.handleUpdatePost(Number(req.query.id), data);
 
-  return res.status(200).json(result);
+  if (!req.file) {
+    const result = await userService.handleUpdatePost(
+      Number(req.query.id),
+      data
+    );
+    return res.status(200).json(result);
+  } else {
+    const result = await userService.handleUpdatePost(
+      Number(req.query.id),
+      data,
+      req.file.path
+    );
+    return res.status(200).json(result);
+  }
 };
 
 const deletePost = async (req, res) => {
@@ -256,6 +291,46 @@ const deleteFavTour = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const bookTour = async (req, res) => {
+  const { user_id, tour_id, arrival_day, arrival_time } = req.body;
+  if (!user_id || !tour_id || !arrival_day || !arrival_time) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const data = { user_id, tour_id, arrival_day, arrival_time };
+  const result = await userService.handleBookTour(data);
+  return res.status(200).json(result);
+};
+
+const cancelBookTour = async (req, res) => {
+  if (!req.query.idTour || !req.query.idUser) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const result = await userService.handleCancleTour(
+    req.query.idTour,
+    req.query.idUser
+  );
+  return res.status(200).json(result);
+};
+
+const reactPost = async (req, res) => {
+  const { post_id, action } = req.body;
+  if (!post_id || !action) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const data = { post_id, action };
+  const result = await userService.handleReactPost(data);
+  return res.status(200).json(result);
+};
+
 module.exports = {
   getUserInfo,
   updateUser,
@@ -276,4 +351,7 @@ module.exports = {
   addFavTour,
   getFavTourOfUser,
   deleteFavTour,
+  bookTour,
+  cancelBookTour,
+  reactPost,
 };
