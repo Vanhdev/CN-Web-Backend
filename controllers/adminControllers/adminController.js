@@ -49,16 +49,6 @@ const getService = async (req, res) => {
   return res.status(200).json(result);
 };
 
-const deleteService = async (req, res) => {
-  if (!req.query.id) {
-    return res.status(200).json({
-      message: "Missing required paramter",
-    });
-  }
-  const result = await adminService.deleteServiceAdmin(req.query.id);
-  return res.status(200).json(result);
-};
-
 const editService = async (req, res) => {
   if (!req.query.id) {
     return res.status(200).json({
@@ -90,16 +80,6 @@ const getVoucher = async (req, res) => {
   return res.status(200).json(result);
 };
 
-const deleteVoucher = async (req, res) => {
-  if (!req.query.id) {
-    return res.status(200).json({
-      message: "Missing required paramter",
-    });
-  }
-  const result = await adminService.deleteVoucherAdmin(req.query.id);
-  return res.status(200).json(result);
-};
-
 const editVoucher = async (req, res) => {
   if (!req.query.id) {
     return res.status(200).json({
@@ -109,6 +89,18 @@ const editVoucher = async (req, res) => {
 
   const data = req.body;
   const result = await adminService.editVoucherAdmin(req.query.id, data);
+
+  return res.status(200).json(result);
+};
+
+const disableVoucher = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required paramter",
+    });
+  }
+
+  const result = await adminService.handleDisableVoucher(req.query.id);
 
   return res.status(200).json(result);
 };
@@ -128,7 +120,9 @@ const addTour = async (req, res) => {
     placeId,
     serviceId,
     voucherId,
-    arrivalId,
+    arrivalId1,
+    arrivalId2,
+    arrivalId3,
   } = req.body;
   const image = req.file.path;
   if (
@@ -145,7 +139,9 @@ const addTour = async (req, res) => {
     !placeId ||
     !serviceId ||
     !voucherId ||
-    !arrivalId ||
+    !arrivalId1 ||
+    !arrivalId2 ||
+    !arrivalId3 ||
     !image
   ) {
     return res.status(200).json({
@@ -166,7 +162,9 @@ const addTour = async (req, res) => {
     placeId,
     serviceId,
     voucherId,
-    arrivalId,
+    arrivalId1,
+    arrivalId2,
+    arrivalId3,
     image,
   });
   return res.status(200).json(result);
@@ -189,8 +187,18 @@ const editTour = async (req, res) => {
     });
   }
   const data = req.body;
-  const result = await adminService.handleEditTour(req.query.id, data);
-  return res.status(200).json(result);
+
+  if (!req.file) {
+    const result = await adminService.handleEditTour(req.query.id, data);
+    return res.status(200).json(result);
+  } else {
+    const result = await adminService.handleEditTour(
+      req.query.id,
+      data,
+      req.file.path
+    );
+    return res.status(200).json(result);
+  }
 };
 
 const deleteTour = async (req, res) => {
@@ -259,16 +267,6 @@ const getPlace = async (req, res) => {
   return res.status(200).json(result);
 };
 
-const deletePlace = async (req, res) => {
-  if (!req.query.id) {
-    return res.status(200).json({
-      message: "Missing required paramter",
-    });
-  }
-  const result = await adminService.handleDeletePlace(req.query.id);
-  return res.status(200).json(result);
-};
-
 const updatePlace = async (req, res) => {
   if (!req.query.id) {
     return res.status(200).json({
@@ -276,8 +274,17 @@ const updatePlace = async (req, res) => {
     });
   }
   const data = req.body;
-  const result = await adminService.handleEditPlace(req.query.id, data);
-  return res.status(200).json(result);
+  if (!req.file) {
+    const result = await adminService.handleEditPlace(req.query.id, data);
+    return res.status(200).json(result);
+  } else {
+    const result = await adminService.handleEditPlace(
+      req.query.id,
+      data,
+      req.file.path
+    );
+    return res.status(200).json(result);
+  }
 };
 
 const addArrival = async (req, res) => {
@@ -323,12 +330,11 @@ module.exports = {
   getTypeTour,
   addService,
   getService,
-  deleteService,
   editService,
   addVoucher,
   getVoucher,
-  deleteVoucher,
   editVoucher,
+  disableVoucher,
   addTour,
   getTour,
   editTour,
@@ -338,7 +344,6 @@ module.exports = {
   handleRequestPost,
   addPlace,
   getPlace,
-  deletePlace,
   updatePlace,
   addArrival,
   getArrival,

@@ -120,34 +120,6 @@ const getServiceAdmin = (serviceId) => {
   });
 };
 
-const deleteServiceAdmin = (serviceId) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const service = await db.services.findOne({
-        where: { id: serviceId },
-        raw: false,
-      });
-
-      if (service) {
-        await db.tour_service.destroy({
-          where: { service_id: serviceId },
-        });
-
-        await service.destroy();
-        resolve({
-          message: "Delete service successfully",
-        });
-      } else {
-        resolve({
-          message: "Service not found",
-        });
-      }
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
-
 const editServiceAdmin = (serviceId, data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -219,34 +191,6 @@ const getVoucherAdmin = (voucherId) => {
   });
 };
 
-const deleteVoucherAdmin = (voucherId) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const voucher = await db.vouchers.findOne({
-        where: { id: voucherId },
-        raw: false,
-      });
-
-      if (voucher) {
-        await db.tour_voucher.destroy({
-          where: { voucher_id: voucherId },
-        });
-
-        await voucher.destroy();
-        resolve({
-          message: "Delete voucher successfully",
-        });
-      } else {
-        resolve({
-          message: "Voucher not found",
-        });
-      }
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
-
 const editVoucherAdmin = (id, data) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -261,6 +205,32 @@ const editVoucherAdmin = (id, data) => {
         await voucher.save();
         resolve({
           message: "Update successfully",
+          voucher,
+        });
+      } else {
+        resolve({
+          message: "Voucher not found",
+        });
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+const handleDisableVoucher = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const voucher = await db.vouchers.findOne({
+        where: { id: id },
+        raw: false,
+      });
+
+      if (voucher) {
+        voucher.deleted = true;
+        await voucher.save();
+        resolve({
+          message: "Disable voucer successfully",
           voucher,
         });
       } else {
@@ -324,15 +294,22 @@ const handleAddTour = (data) => {
       );
 
       // choose arrival
-      await db.tour_arrival.create(
-        {
-          arrival_id: Number(data.arrivalId),
-          tour_id: newTour.id,
-        },
-        {
-          fields: ["arrival_id", "tour_id"],
-        }
-      );
+      const arrival = [];
+      arrival.push({
+        arrival_id: Number(data.arrivalId1),
+        tour_id: newTour.id,
+      });
+      arrival.push({
+        arrival_id: Number(data.arrivalId2),
+        tour_id: newTour.id,
+      });
+      arrival.push({
+        arrival_id: Number(data.arrivalId3),
+        tour_id: newTour.id,
+      });
+      await db.tour_arrival.bulkCreate(arrival, {
+        fields: ["arrival_id", "tour_id"],
+      });
 
       // add img
       const newImg = await db.images.create({
@@ -363,7 +340,52 @@ const handleGetTour = (tourId) => {
     try {
       if (tourId.toLowerCase() === "all") {
         const allTours = await db.tours.findAll();
-        resolve(allTours);
+        const listTour = await Promise.all(
+          allTours.map(async (tour) => {
+            const imageTour = await db.image_tour.findOne({
+              where: { tour_id: tour.id },
+              attributes: { exclude: ["id"] },
+            });
+
+            const placeTour = await db.tour_place.findOne({
+              where: { tour_id: tour.id },
+              attributes: { exclude: ["id"] },
+            });
+
+            const rates = await db.rates.findAll({
+              where: { tour_id: tour.id },
+              attributes: { exclude: ["id"] },
+            });
+
+            let allPoint = 0;
+            let pointTour = 0;
+            if (rates.length > 0) {
+              rates.forEach((rate) => {
+                allPoint +=
+                  (rate.location_rate +
+                    rate.service_rate +
+                    rate.price_rate +
+                    rate.infrastructure_rate) /
+                  4;
+              });
+              pointTour = allPoint / rates.length;
+            }
+
+            if (!imageTour || !placeTour) {
+              return { ...tour, pointTour };
+            } else {
+              const img = await db.images.findOne({
+                where: { id: imageTour.image_id },
+              });
+
+              const place = await db.places.findOne({
+                where: { id: placeTour.place_id },
+              });
+              return { ...tour, img, place, pointTour };
+            }
+          })
+        );
+        resolve(listTour);
       } else {
         const tour = await db.tours.findOne({
           where: { id: tourId },
@@ -375,9 +397,84 @@ const handleGetTour = (tourId) => {
           });
         }
 
+        // get image
+        const idImg = await db.image_tour.findOne({
+          where: { tour_id: tourId },
+          attributes: { exclude: ["id"] },
+        });
+
+        const linkImg = await db.images.findOne({
+          where: { id: idImg.image_id },
+        });
+
+        // get place
+        const idPlace = await db.tour_place.findOne({
+          where: { tour_id: tourId },
+          attributes: { exclude: ["id"] },
+        });
+
+        const place = await db.places.findOne({
+          where: { id: idPlace.place_id },
+        });
+
+        // get arrival
+        const idArrival = await db.tour_arrival.findAll({
+          where: { tour_id: tourId },
+          attributes: { exclude: ["id"] },
+        });
+
+        const arrival1 = await db.arrivals.findOne({
+          where: { id: idArrival[0].arrival_id },
+        });
+
+        const arrival2 = await db.arrivals.findOne({
+          where: { id: idArrival[1].arrival_id },
+        });
+
+        const arrival3 = await db.arrivals.findOne({
+          where: { id: idArrival[2].arrival_id },
+        });
+
+        // get voucher
+        const idVoucher = await db.tour_voucher.findOne({
+          where: { tour_id: tourId },
+          attributes: { exclude: ["id"] },
+        });
+
+        const voucher = await db.vouchers.findOne({
+          where: { id: idVoucher.voucher_id },
+        });
+
+        // get rate
+        const rates = await db.rates.findAll({
+          where: { tour_id: tour.id },
+          attributes: { exclude: ["id"] },
+        });
+
+        let allPoint = 0;
+        let pointTour = 0;
+        if (rates.length > 0) {
+          rates.forEach((rate) => {
+            allPoint +=
+              (rate.location_rate +
+                rate.service_rate +
+                rate.price_rate +
+                rate.infrastructure_rate) /
+              4;
+          });
+          pointTour = allPoint / rates.length;
+        }
+
         resolve({
           message: "OK",
           tour,
+          linkImg,
+          place,
+          arrival1,
+          arrival2,
+          arrival3,
+          voucher,
+          pointTour,
         });
       }
     } catch (error) {
@@ -386,7 +483,7 @@ const handleGetTour = (tourId) => {
   });
 };
 
-const handleEditTour = (idTour, data) => {
+const handleEditTour = (idTour, data, img) => {
   return new Promise(async (resolve, reject) => {
     try {
       const tour = await db.tours.findOne({
@@ -408,8 +505,29 @@ const handleEditTour = (idTour, data) => {
           (tour.status = data.status ? data.status : tour.status),
           (tour.booking_deadline = data.booking_deadline
             ? data.booking_deadline
-            : tour.booking_deadline),
-          await tour.save();
+            : tour.booking_deadline);
+
+        if (img) {
+          const newImgTour = await db.images.create({
+            image_url: img,
+          });
+
+          await db.image_tour.destroy({
+            where: { tour_id: tour.id },
+          });
+
+          await db.image_tour.create(
+            {
+              image_id: newImgTour.id,
+              tour_id: tour.id,
+            },
+            {
+              fields: ["image_id", "tour_id"],
+            }
+          );
+        }
+
+        await tour.save();
         resolve({
           message: "Update successfully",
           tour,
@@ -599,9 +717,18 @@ const handleGetPlace = (id) => {
           });
         }
 
+        const idImg = await db.image_place.findOne({
+          where: { place_id: place.id },
+          attributes: { exclude: ["id"] },
+        });
+        const link = await db.images.findOne({
+          where: { id: idImg.image_id },
+        });
+
         resolve({
           message: "OK",
           place,
+          link,
         });
       }
     } catch (error) {
@@ -610,39 +737,7 @@ const handleGetPlace = (id) => {
   });
 };
 
-const handleDeletePlace = (id) => {
-  return new Promise(async (resolve, reject) => {
-    try {
-      const place = await db.places.findOne({
-        where: { id: id },
-        raw: false,
-      });
-
-      if (place) {
-        await db.tour_place.destroy({
-          where: { place_id: id },
-        });
-
-        await db.image_place.destroy({
-          where: { place_id: id },
-        });
-
-        await place.destroy();
-        resolve({
-          message: "Delete place successfully",
-        });
-      } else {
-        resolve({
-          message: "Place not found",
-        });
-      }
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
-
-const handleEditPlace = (id, data) => {
+const handleEditPlace = (id, data, img) => {
   return new Promise(async (resolve, reject) => {
     try {
       const place = await db.places.findOne({
@@ -655,6 +750,25 @@ const handleEditPlace = (id, data) => {
         place.description = data.description
           ? data.description
           : place.description;
+        if (img) {
+          const newImgPlace = await db.images.create({
+            image_url: img,
+          });
+
+          await db.image_place.destroy({
+            where: { place_id: place.id },
+          });
+
+          await db.image_place.create(
+            {
+              image_id: newImgPlace.id,
+              place_id: place.id,
+            },
+            {
+              fields: ["image_id", "place_id"],
+            }
+          );
+        }
         await place.save();
         resolve({
           message: "Update successfully",
@@ -827,11 +941,10 @@ module.exports = {
   getTypeTourById,
   addServiceTour,
   getServiceAdmin,
-  deleteServiceAdmin,
   editServiceAdmin,
   addVoucerAdmin,
   getVoucherAdmin,
-  deleteVoucherAdmin,
+  handleDisableVoucher,
   editVoucherAdmin,
   handleAddTour,
   handleGetTour,
@@ -842,7 +955,6 @@ module.exports = {
   adminHandleReqPost,
   handleAddPlace,
   handleGetPlace,
-  handleDeletePlace,
   handleEditPlace,
   handleAddArrival,
   handleGetArrival,

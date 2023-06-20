@@ -2,6 +2,7 @@ var DataTypes = require("sequelize").DataTypes;
 var _arrivals = require("./arrivals");
 var _comments = require("./comments");
 var _image_place = require("./image_place");
+var _image_post = require("./image_post");
 var _image_tour = require("./image_tour");
 var _images = require("./images");
 var _places = require("./places");
@@ -24,6 +25,7 @@ function initModels(sequelize) {
   var arrivals = _arrivals(sequelize, DataTypes);
   var comments = _comments(sequelize, DataTypes);
   var image_place = _image_place(sequelize, DataTypes);
+  var image_post = _image_post(sequelize, DataTypes);
   var image_tour = _image_tour(sequelize, DataTypes);
   var images = _images(sequelize, DataTypes);
   var places = _places(sequelize, DataTypes);
@@ -46,6 +48,8 @@ function initModels(sequelize) {
   arrivals.hasMany(tour_arrival, { as: "tour_arrivals", foreignKey: "arrival_id"});
   image_place.belongsTo(images, { as: "image", foreignKey: "image_id"});
   images.hasMany(image_place, { as: "image_places", foreignKey: "image_id"});
+  image_post.belongsTo(images, { as: "image", foreignKey: "image_id"});
+  images.hasMany(image_post, { as: "image_posts", foreignKey: "image_id"});
   image_tour.belongsTo(images, { as: "image", foreignKey: "image_id"});
   images.hasMany(image_tour, { as: "image_tours", foreignKey: "image_id"});
   image_place.belongsTo(places, { as: "place", foreignKey: "place_id"});
@@ -54,6 +58,8 @@ function initModels(sequelize) {
   places.hasMany(tour_place, { as: "tour_places", foreignKey: "place_id"});
   comments.belongsTo(posts, { as: "post", foreignKey: "post_id"});
   posts.hasMany(comments, { as: "comments", foreignKey: "post_id"});
+  image_post.belongsTo(posts, { as: "post", foreignKey: "post_id"});
+  posts.hasMany(image_post, { as: "image_posts", foreignKey: "post_id"});
   tour_service.belongsTo(services, { as: "service", foreignKey: "service_id"});
   services.hasMany(tour_service, { as: "tour_services", foreignKey: "service_id"});
   image_tour.belongsTo(tours, { as: "tour", foreignKey: "tour_id"});
@@ -93,6 +99,7 @@ function initModels(sequelize) {
     arrivals,
     comments,
     image_place,
+    image_post,
     image_tour,
     images,
     places,
