@@ -847,6 +847,36 @@ const handleGetArrival = (id) => {
   });
 };
 
+const handleGetAllBooking = () => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const listBooking = await db.user_booking_tour.findAll({
+        attributes: { exclude: ["id"] },
+      });
+      if (listBooking.length === 0) {
+        return resolve({
+          message: "Not any tour booking",
+        });
+      } else {
+        const listAllBooking = await Promise.all(
+          listBooking.map(async (booking) => {
+            const tour = await db.tours.findOne({
+              where: { id: booking.tour_id },
+            });
+            const user = await db.users.findOne({
+              where: { id: booking.user_id },
+            });
+            return { tour, user };
+          })
+        );
+        return resolve(listAllBooking);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 const handleCountTours = () => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -967,6 +997,7 @@ module.exports = {
   handleEditPlace,
   handleAddArrival,
   handleGetArrival,
+  handleGetAllBooking,
   handleCountTours,
   handleCountBookingTours,
   handleCountUsers,

@@ -758,6 +758,44 @@ const handleReactPost = (data) => {
   });
 };
 
+const handleGetBooking = (id) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.users.findOne({
+        where: { id: id },
+      });
+      if (!user) {
+        return resolve({
+          message: "User not found",
+        });
+      }
+
+      const listBooking = await db.user_booking_tour.findAll({
+        where: { user_id: id },
+        attributes: { exclude: ["id"] },
+      });
+
+      if (listBooking.length === 0) {
+        return resolve({
+          message: "User doesn't have booked any tour",
+        });
+      } else {
+        const listUserBooking = await Promise.all(
+          listBooking.map(async (booking) => {
+            const tour = await db.tours.findOne({
+              where: { id: booking.tour_id },
+            });
+            return tour;
+          })
+        );
+        return resolve(listUserBooking);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
 module.exports = {
   getUserById,
   updateUserByEmail,
@@ -781,4 +819,5 @@ module.exports = {
   handleBookTour,
   handleCancleTour,
   handleReactPost,
+  handleGetBooking,
 };

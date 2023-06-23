@@ -309,20 +309,25 @@ const getArrival = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const getAllBooking = async (req, res) => {
+  const result = await adminService.handleGetAllBooking();
+  return res.status(200).json(result);
+};
+
 const countTours = async (req, res) => {
   const result = await adminService.handleCountTours();
   return res.status(200).json(result);
-}
+};
 
 const countBookingTours = async (req, res) => {
   const result = await adminService.handleCountBookingTours();
   return res.status(200).json(result);
-}
+};
 
 const countProfits = async (req, res) => {
   const result = await adminService.handleCountProfits();
   return res.status(200).json(result);
-}
+};
 
 module.exports = {
   addTypeTour,
@@ -347,7 +352,8 @@ module.exports = {
   updatePlace,
   addArrival,
   getArrival,
+  getAllBooking,
   countTours,
   countBookingTours,
-  countProfits
+  countProfits,
 };
