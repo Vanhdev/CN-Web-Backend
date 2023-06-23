@@ -39,6 +39,8 @@ addPlace(token, dispatch, newPlace)
 
 ###### /users/react-post : (method put) like/dislike bài viết (body gồm post_id và action (action='like' hoặc 'dislike'))
 
+###### /admin/handle-post?id=: (method put) body gồm status ('true' hoặc 'false')
+
 ##### QAS
 
 ###### /users/add-qas: thêm câu hỏi (body gồm question, user_id)
@@ -130,6 +132,10 @@ addPlace(token, dispatch, newPlace)
 ###### /users/book-tour : người dùng đặt tour (body gồm user_id, tour_id, arrival_day, arrival_time)
 
 ###### /users/cancel-book-tour?idTour=&idUser= : hủy đặt tour
+
+###### /users/get-book-tour?id= : lấy thông tin tour được book theo id của người dùng
+
+###### /admin/get-all-booking : lấy thông tin các booking (hiện cả thông tin của tour và người dùng trong 1 object {tour: {...}, user: {...}})
 
 ##### favorite tour
 

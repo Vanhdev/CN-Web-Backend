@@ -68,8 +68,15 @@ router.put("/handle-post", checkToken, adminController.handleRequestPost);
 router.post("/add-arrival", adminController.addArrival);
 router.get("/get-arrival", adminController.getArrival);
 
+// get-all-booking
+router.get("/get-all-booking", adminController.getAllBooking);
+
 router.get("/count-tours", checkAdmin, adminController.countTours);
-router.get("/count-booking-tours", checkAdmin, adminController.countBookingTours);
+router.get(
+  "/count-booking-tours",
+  checkAdmin,
+  adminController.countBookingTours
+);
 router.get("/count-profits", checkAdmin, adminController.countProfits);
 
 module.exports = router;

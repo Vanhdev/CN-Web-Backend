@@ -65,6 +65,7 @@ router.get("/get-fav-tour", checkToken, userController.getFavTourOfUser);
 router.delete("/delete-fav-tour", checkToken, userController.deleteFavTour);
 
 // booking tour
+router.get("/get-book-tour", checkToken, userController.getBookingUser);
 router.post("/book-tour", checkToken, userController.bookTour);
 router.delete("/cancel-book-tour", checkToken, userController.cancelBookTour);
 

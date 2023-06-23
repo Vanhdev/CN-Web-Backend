@@ -331,6 +331,16 @@ const reactPost = async (req, res) => {
   return res.status(200).json(result);
 };
 
+const getBookingUser = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+  const result = await userService.handleGetBooking(req.query.id);
+  return res.status(200).json(result);
+};
+
 module.exports = {
   getUserInfo,
   updateUser,
@@ -354,4 +364,5 @@ module.exports = {
   bookTour,
   cancelBookTour,
   reactPost,
+  getBookingUser,
 };
