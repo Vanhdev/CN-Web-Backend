@@ -1,5 +1,4 @@
 const db = require("../../models/index");
-const user_booking_tour = require("../../models/user_booking_tour");
 
 const creatTypeTour = (data) => {
   return new Promise(async (resolve, reject) => {
@@ -417,6 +416,16 @@ const handleGetTour = (tourId) => {
           where: { id: idPlace.place_id },
         });
 
+        // get service
+        const idService = await db.tour_service.findOne({
+          where: { tour_id: tourId },
+          attributes: { exclude: ["id"] },
+        });
+
+        const service = await db.services.findOne({
+          where: { id: idService.service_id },
+        });
+
         // get arrival
         const idArrival = await db.tour_arrival.findAll({
           where: { tour_id: tourId },
@@ -470,6 +479,7 @@ const handleGetTour = (tourId) => {
           tour,
           linkImg,
           place,
+          service,
           arrival1,
           arrival2,
           arrival3,
