@@ -69,7 +69,7 @@ router.post("/add-arrival", adminController.addArrival);
 router.get("/get-arrival", adminController.getArrival);
 
 // get-all-booking
-router.get("/get-all-booking", adminController.getAllBooking);
+router.get("/get-all-booking", checkAdmin, adminController.getAllBooking);
 
 router.get("/count-tours", checkAdmin, adminController.countTours);
 router.get(
