@@ -663,26 +663,14 @@ const handleDeleteFavTour = (idTour, idUser) => {
 const handleBookTour = (data) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const tourBooking = await db.user_booking_tour.create(
-        {
-          user_id: data?.user_id,
-          tour_id: data?.tour_id,
-          arrival_day: data.arrival_day,
-          arrival_time: data.arrival_time,
-          price: data?.price,
-          num_people: data?.num_people,
-        },
-        {
-          fields: [
-            "user_id",
-            "tour_id",
-            "arrival_day",
-            "arrival_time",
-            "price",
-            "num_people",
-          ],
-        }
-      );
+      const tourBooking = await db.user_booking_tour.create({
+        user_id: data?.user_id,
+        tour_id: data?.tour_id,
+        arrival_day: data.arrival_day,
+        arrival_time: data.arrival_time,
+        price: data?.price,
+        num_people: data?.num_people,
+      });
       resolve({
         message: "Book tour successfully",
         tourBooking,
@@ -693,39 +681,23 @@ const handleBookTour = (data) => {
   });
 };
 
-const handleCancleTour = (idTour, idUser) => {
+const handleCancleTour = (id) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const user = await db.users.findOne({
-        where: { id: idUser },
+      const booking = await db.user_booking_tour.findOne({
+        where: { id: id },
+        raw: false,
       });
 
-      const tour = await db.tours.findOne({
-        where: { id: idTour },
-      });
-
-      if (!user || user.length === 0 || !tour || tour.length === 0) {
-        resolve({
-          message: "User or tour not found",
+      if (!booking) {
+        return resolve({
+          message: "Booking not found",
         });
       } else {
-        const tourBooking = await db.user_booking_tour.findOne({
-          where: { user_id: idUser, tour_id: idTour },
-          attributes: { exclude: ["id"] },
+        await booking.destroy();
+        return resolve({
+          message: "Cancel booking successfully",
         });
-
-        if (!tourBooking || tourBooking.length === 0) {
-          resolve({
-            message: "Tour not found",
-          });
-        } else {
-          await db.user_booking_tour.destroy({
-            where: { user_id: idUser, tour_id: idTour },
-          });
-          resolve({
-            message: "Cancel booking tour successfully",
-          });
-        }
       }
     } catch (error) {
       reject(error);
@@ -781,7 +753,6 @@ const handleGetBooking = (id) => {
 
       const listBooking = await db.user_booking_tour.findAll({
         where: { user_id: id },
-        attributes: { exclude: ["id"] },
       });
 
       if (listBooking.length === 0) {
@@ -794,7 +765,7 @@ const handleGetBooking = (id) => {
             const tour = await db.tours.findOne({
               where: { id: booking.tour_id },
             });
-            return tour;
+            return { tour, booking };
           })
         );
         return resolve(listUserBooking);
