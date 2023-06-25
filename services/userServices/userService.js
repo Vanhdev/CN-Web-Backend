@@ -669,9 +669,18 @@ const handleBookTour = (data) => {
           tour_id: data?.tour_id,
           arrival_day: data.arrival_day,
           arrival_time: data.arrival_time,
+          price: data?.price,
+          num_people: data?.num_people,
         },
         {
-          fields: ["user_id", "tour_id", "arrival_day", "arrival_time"],
+          fields: [
+            "user_id",
+            "tour_id",
+            "arrival_day",
+            "arrival_time",
+            "price",
+            "num_people",
+          ],
         }
       );
       resolve({
