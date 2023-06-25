@@ -860,9 +860,7 @@ const handleGetArrival = (id) => {
 const handleGetAllBooking = () => {
   return new Promise(async (resolve, reject) => {
     try {
-      const listBooking = await db.user_booking_tour.findAll({
-        attributes: { exclude: ["id"] },
-      });
+      const listBooking = await db.user_booking_tour.findAll();
       if (listBooking.length === 0) {
         return resolve({
           message: "Not any tour booking",

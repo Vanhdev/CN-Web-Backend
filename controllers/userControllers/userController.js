@@ -320,16 +320,13 @@ const bookTour = async (req, res) => {
 };
 
 const cancelBookTour = async (req, res) => {
-  if (!req.query.idTour || !req.query.idUser) {
+  if (!req.query.idBooking) {
     return res.status(200).json({
       message: "Missing required parameter",
     });
   }
 
-  const result = await userService.handleCancleTour(
-    req.query.idTour,
-    req.query.idUser
-  );
+  const result = await userService.handleCancleTour(req.query.idBooking);
   return res.status(200).json(result);
 };
 
