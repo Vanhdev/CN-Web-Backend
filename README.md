@@ -131,7 +131,7 @@ addPlace(token, dispatch, newPlace)
 
 ##### book tour
 
-###### /users/book-tour : người dùng đặt tour (body gồm user_id, tour_id, arrival_day, arrival_time)
+###### /users/book-tour : người dùng đặt tour (body gồm user_id, tour_id, arrival_day, arrival_time, price, num_people)
 
 ###### /users/cancel-book-tour?idTour=&idUser= : hủy đặt tour
 
