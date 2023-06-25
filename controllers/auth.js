@@ -20,4 +20,15 @@ const loginUser = async (req, res) => {
   });
 };
 
-module.exports = { registerUser, loginUser };
+const changePassword = async (req, res) => {
+  if (!req.query.id) {
+    return res.status(200).json({
+      message: "Missing required parameter",
+    });
+  }
+
+  const result = await authService.handleChangePassword(req.query.id, req.body);
+  return res.status(200).json(result);
+};
+
+module.exports = { registerUser, loginUser, changePassword };

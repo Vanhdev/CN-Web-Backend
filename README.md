@@ -81,6 +81,8 @@ addPlace(token, dispatch, newPlace)
 
 ###### /users/update-user : cập nhật thông tin người dùng
 
+###### /auth/change-pass?id= (method put) : thay đổi mật khẩu theo id user (body gồm old_pass, new_pass, confirm_pass)
+
 ##### type
 
 ###### /admin/add-type: thêm loại cho tour (body gồm name)
