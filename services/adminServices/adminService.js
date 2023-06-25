@@ -226,7 +226,7 @@ const handleDisableVoucher = (id) => {
       });
 
       if (voucher) {
-        voucher.deleted = true;
+        voucher.deleted = !voucher.deleted;
         await voucher.save();
         resolve({
           message: "Disable voucer successfully",
@@ -876,7 +876,7 @@ const handleGetAllBooking = () => {
             const user = await db.users.findOne({
               where: { id: booking.user_id },
             });
-            return { tour, user };
+            return { tour, user, booking };
           })
         );
         return resolve(listAllBooking);

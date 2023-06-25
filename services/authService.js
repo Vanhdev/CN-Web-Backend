@@ -109,4 +109,43 @@ const createNewUser = (data) => {
   });
 };
 
-module.exports = { handleLogin, createNewUser };
+const handleChangePassword = (id, data) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const user = await db.users.findOne({
+        where: { id: id },
+        raw: false,
+      });
+      if (!user) {
+        return resolve({
+          message: "User not found",
+        });
+      } else {
+        const check = await bcrypt.compare(data.old_pass, user.password);
+        if (!check) {
+          return resolve({
+            message: "Wrong password",
+          });
+        } else {
+          if (data.new_pass !== data.confirm_pass) {
+            return resolve({
+              message: "Wrong confirm password",
+            });
+          } else {
+            const salt = await bcrypt.genSalt(10);
+            const hashPassword = await bcrypt.hash(data.new_pass, salt);
+            user.password = hashPassword;
+            await user.save();
+            return resolve({
+              message: "Update password successfully",
+            });
+          }
+        }
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+};
+
+module.exports = { handleLogin, createNewUser, handleChangePassword };
