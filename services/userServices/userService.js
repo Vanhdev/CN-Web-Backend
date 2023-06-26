@@ -603,9 +603,20 @@ const handleGetFavTourOfUser = (idUser) => {
             message: "User doesn't have any favorite tour",
           });
         } else {
+          const listFavTour = await Promise.all(
+            favTour.map(async (fav) => {
+              const tour = await db.tours.findOne({
+                where: { id: fav.tour_id },
+              });
+              const user = await db.users.findOne({
+                where: { id: fav.user_id },
+              });
+              return { tour, user };
+            })
+          );
           resolve({
             message: "OK",
-            favTour,
+            listFavTour,
           });
         }
       } else {

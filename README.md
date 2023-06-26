@@ -133,7 +133,7 @@ addPlace(token, dispatch, newPlace)
 
 ###### /users/book-tour : người dùng đặt tour (body gồm user_id, tour_id, arrival_day, arrival_time, price, num_people)
 
-###### /users/cancel-book-tour?id= : hủy đặt tour theo id của booking (method delete)
+###### /users/cancel-book-tour?idBooking= : hủy đặt tour theo id của booking (method delete)
 
 ###### /users/get-book-tour?id= : lấy thông tin tour được book theo id của người dùng
 
